@@ -1,8 +1,9 @@
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material'
 import styled from '@emotion/styled'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import axie1 from '../../assets/axie-1.png'
+import * as MI from '@mui/icons-material'
 
 const Container = styled.div`
   display: flex;
@@ -92,9 +93,35 @@ const CssTextField = styled(TextField)(({ value, unit, width }) => ({
   },
 }))
 
-const StyledFormControl = styled(FormControl)({
-  width: '20vw',
-})
+const StyledFormControl = styled(FormControl)(({ value }) => ({
+  width: '9vw',
+  color: '#ffffff',
+  '& label': {
+    color: '#decbbd',
+    display: value ? 'block' : 'flex',
+    justifyContent: 'center',
+    // background: 'red',
+    width: 'calc(100% - 36px)',
+  },
+  '& .MuiSelect-select': {
+    color: '#ffffff',
+  },
+  '& label.Mui-focused': {
+    display: 'block',
+  },
+  '& svg': {
+    color: '#decbbd',
+  },
+  '& fieldset': {
+    borderColor: '#decbbd',
+  },
+  '&:hover fieldset': {
+    borderColor: '#ffeedd !important',
+  },
+  '& .Mui-focused fieldset': {
+    borderColor: '#ffeedd !important',
+  },
+}))
 
 const StyledSelect = styled(Select)({
   borderRadius: '32px !important',
@@ -139,7 +166,7 @@ export default function Create() {
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
   const [classify, setClassify] = useState('') // BEAST PLANT BUG MECH
-  const [stats, setStats] = useState({ health: 1, speed: 1, skill: 1, morale: 1 })
+  // const [stats, setStats] = useState({ health: 1, speed: 1, skill: 1, morale: 1 })
   const { t } = useTranslation()
 
   return (
@@ -156,39 +183,52 @@ export default function Create() {
       </Heading>
       <CssTextField
         width="20vw"
-        label="Name"
+        label={t('Name')}
         variant="outlined"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
-      <CssTextField
-        width="20vw"
-        unit="ETH"
-        type="number"
-        label="Price"
-        variant="outlined"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-      />
-      <StyledFormControl>
-        <InputLabel id="demo-simple-select-label" style={{ color: 'white' }}>
-          {t('Class')}
-        </InputLabel>
-        <StyledSelect
-          displayEmpty
-          value={classify}
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          label="Class"
-          onChange={(e) => setClassify(e.target.value)}
-        >
-          <MenuItem value="Beast">Beast</MenuItem>
-          <MenuItem value="Plant">Plant</MenuItem>
-          <MenuItem value="Bug">Bug</MenuItem>
-          <MenuItem value="Mech">Mech</MenuItem>
-        </StyledSelect>
-      </StyledFormControl>
-      <StyledButton variant="primary">Create</StyledButton>
+      <Box width="20vw" display="flex" justifyContent="space-between">
+        <CssTextField
+          width="9vw"
+          unit="ETH"
+          type="number"
+          label={t('Price')}
+          variant="outlined"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
+        <StyledFormControl value={classify}>
+          <InputLabel style={{ color: '#decbbd' }}>{t('Class')}</InputLabel>
+          <StyledSelect displayEmpty value={classify} label={t('Class')} onChange={(e) => setClassify(e.target.value)}>
+            <MenuItem value="Beast">{t('Beast')}</MenuItem>
+            <MenuItem value="Plant">{t('Plant')}</MenuItem>
+            <MenuItem value="Bug">{t('Bug')}</MenuItem>
+            <MenuItem value="Mech">{t('Mech')}</MenuItem>
+          </StyledSelect>
+        </StyledFormControl>
+      </Box>
+      <Box width="20vw" display="flex" justifyContent="space-between">
+        <Box display="flex" alignItems="center">
+          <MI.Favorite style={{ fill: '#3ac279' }} />
+          <Typography fontSize="20px">14</Typography>
+        </Box>
+        <Box display="flex" alignItems="center">
+          <MI.FlashOn style={{ fill: '#f7ac0a' }} />
+          <Typography fontSize="20px">15</Typography>
+        </Box>
+        <Box display="flex" alignItems="center">
+          <MI.StarRate style={{ fill: '#9166e0' }} />
+          <Typography lineHeight="normal" fontSize="20px">
+            16
+          </Typography>
+        </Box>
+        <Box display="flex" alignItems="center">
+          <MI.LocalFireDepartment style={{ fill: '#c23a3a' }} />
+          <Typography fontSize="20px">17</Typography>
+        </Box>
+      </Box>
+      <StyledButton variant="primary">{t('Create')}</StyledButton>
     </Container>
   )
 }
