@@ -1,15 +1,19 @@
+import 'inter-ui/inter.css'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
-import 'inter-ui/inter.css'
 import './index.scss'
 import App from './pages/App'
 import reportWebVitals from './reportWebVitals'
+import rootReducer from './states'
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <Provider store={rootReducer}>
+        <App />
+      </Provider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root'),
