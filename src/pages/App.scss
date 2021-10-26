@@ -10,7 +10,6 @@
     left: 16px;
     width: calc(100vw - 32px);
     display: flex;
-    //justify-content: space-between;
 
     .nav {
       background: #ffeedd;
@@ -78,5 +77,11 @@
         }
       }
     }
+  }
+
+  .app-body {
+    width: 100vw;
+    height: 100px;
+    padding: 98px 16px 16px 16px;
   }
 }

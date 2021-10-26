@@ -32,19 +32,20 @@ function App() {
         <div style={{ flex: 1 }} />
         <nav className="nav">
           <ul>
-            <li className={activeIndex === 0 ? 'active' : ''} onClick={() => history.push('/marketplace')}>
+            <li tabIndex="0" className={activeIndex === 0 ? 'active' : ''} onClick={() => history.push('/marketplace')}>
               {t('Marketplace')}
             </li>
-            <li className={activeIndex === 1 ? 'active' : ''} onClick={() => history.push('/sell')}>
-              Sell
+            <li tabIndex="0" className={activeIndex === 1 ? 'active' : ''} onClick={() => history.push('/sell')}>
+              {t('Sell')}
             </li>
-            <li className={activeIndex === 2 ? 'active' : ''} onClick={() => history.push('/create')}>
-              Create
+            <li tabIndex="0" className={activeIndex === 2 ? 'active' : ''} onClick={() => history.push('/create')}>
+              {t('Create')}
             </li>
           </ul>
         </nav>
         <div className="lng-and-account">
           <div
+            tabIndex="0"
             className="lng"
             onClick={() => {
               const lng = window.localStorage.getItem('lng')
@@ -65,15 +66,19 @@ function App() {
           >
             {lng === 'ja-JP' ? '日本語' : 'EN'}
           </div>
-          <div className="account">{t('Connect Metamask')}</div>
+          <div tabIndex="0" className="account">
+            {t('Connect Metamask')}
+          </div>
         </div>
       </header>
-      <Switch>
-        <Route exact strict path="/marketplace" component={Marketplace} />
-        <Route exact strict path="/sell" component={Sell} />
-        <Route exact strict path="/create" component={Create} />
-        <Route component={() => <Redirect to="/marketplace" />} />
-      </Switch>
+      <div className="app-body">
+        <Switch>
+          <Route exact strict path="/marketplace" component={Marketplace} />
+          <Route exact strict path="/sell" component={Sell} />
+          <Route exact strict path="/create" component={Create} />
+          <Route component={() => <Redirect to="/marketplace" />} />
+        </Switch>
+      </div>
     </div>
   )
 }
