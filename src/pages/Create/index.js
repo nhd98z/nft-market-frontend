@@ -166,7 +166,7 @@ export default function Create() {
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
   const [classify, setClassify] = useState('') // BEAST PLANT BUG MECH
-  // const [stats, setStats] = useState({ health: 1, speed: 1, skill: 1, morale: 1 })
+  const [stats, setStats] = useState({ health: 1, speed: 1, skill: 1, morale: 1 })
   const { t } = useTranslation()
 
   return (
@@ -209,23 +209,71 @@ export default function Create() {
         </StyledFormControl>
       </Box>
       <Box width="20vw" display="flex" justifyContent="space-between">
-        <Box display="flex" alignItems="center">
+        <Box
+          display="flex"
+          alignItems="center"
+          tabIndex="0"
+          style={{ cursor: 'pointer' }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowUp') {
+              setStats((prev) => ({ ...prev, health: Math.min(prev.health + 1, 100) }))
+            } else if (e.key === 'ArrowDown') {
+              setStats((prev) => ({ ...prev, health: Math.max(prev.health - 1, 1) }))
+            }
+          }}
+        >
           <MI.Favorite style={{ fill: '#3ac279' }} />
-          <Typography fontSize="20px">14</Typography>
+          <Typography fontSize="20px">{stats.health}</Typography>
         </Box>
-        <Box display="flex" alignItems="center">
+        <Box
+          display="flex"
+          alignItems="center"
+          tabIndex="0"
+          style={{ cursor: 'pointer' }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowUp') {
+              setStats((prev) => ({ ...prev, speed: Math.min(prev.speed + 1, 100) }))
+            } else if (e.key === 'ArrowDown') {
+              setStats((prev) => ({ ...prev, speed: Math.max(prev.speed - 1, 1) }))
+            }
+          }}
+        >
           <MI.FlashOn style={{ fill: '#f7ac0a' }} />
-          <Typography fontSize="20px">15</Typography>
+          <Typography fontSize="20px">{stats.speed}</Typography>
         </Box>
-        <Box display="flex" alignItems="center">
+        <Box
+          display="flex"
+          alignItems="center"
+          tabIndex="0"
+          style={{ cursor: 'pointer' }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowUp') {
+              setStats((prev) => ({ ...prev, skill: Math.min(prev.skill + 1, 100) }))
+            } else if (e.key === 'ArrowDown') {
+              setStats((prev) => ({ ...prev, skill: Math.max(prev.skill - 1, 1) }))
+            }
+          }}
+        >
           <MI.StarRate style={{ fill: '#9166e0' }} />
           <Typography lineHeight="normal" fontSize="20px">
-            16
+            {stats.skill}
           </Typography>
         </Box>
-        <Box display="flex" alignItems="center">
+        <Box
+          display="flex"
+          alignItems="center"
+          tabIndex="0"
+          style={{ cursor: 'pointer' }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowUp') {
+              setStats((prev) => ({ ...prev, morale: Math.min(prev.morale + 1, 100) }))
+            } else if (e.key === 'ArrowDown') {
+              setStats((prev) => ({ ...prev, morale: Math.max(prev.morale - 1, 1) }))
+            }
+          }}
+        >
           <MI.LocalFireDepartment style={{ fill: '#c23a3a' }} />
-          <Typography fontSize="20px">17</Typography>
+          <Typography fontSize="20px">{stats.morale}</Typography>
         </Box>
       </Box>
       <StyledButton variant="primary">{t('Create')}</StyledButton>
