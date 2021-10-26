@@ -1,7 +1,8 @@
-import { Box, Button, TextField } from '@mui/material'
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import styled from '@emotion/styled'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import axie1 from '../../assets/axie-1.png'
 
 const Container = styled.div`
   display: flex;
@@ -15,7 +16,6 @@ const Container = styled.div`
 `
 
 const Heading = styled.h1`
-  //@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
   font-size: 60px;
   margin: 36px 0;
   position: relative;
@@ -92,6 +92,14 @@ const CssTextField = styled(TextField)(({ value, unit, width }) => ({
   },
 }))
 
+const StyledFormControl = styled(FormControl)({
+  width: '20vw',
+})
+
+const StyledSelect = styled(Select)({
+  borderRadius: '32px !important',
+})
+
 const StyledButton = styled(Button)`
   background: #ffeedd;
   color: #000000;
@@ -106,16 +114,37 @@ const StyledButton = styled(Button)`
   }
 `
 
+const Axie = styled.img`
+  width: 20vw;
+  position: absolute;
+`
+
+const Axie1 = styled(Axie)`
+  top: 25vh;
+  left: 10vw;
+  transform: scaleX(-1) rotate(15deg);
+  animation-timing-function: ease-in-out;
+  animation: yee 1.75s;
+  @keyframes yee {
+    from {
+      left: -100vw;
+    }
+    to {
+      left: 10vw;
+    }
+  }
+`
+
 export default function Create() {
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
-  const [classify, setClassify] = useState('BEAST') // BEAST PLANT BUG MECH
+  const [classify, setClassify] = useState('') // BEAST PLANT BUG MECH
   const [stats, setStats] = useState({ health: 1, speed: 1, skill: 1, morale: 1 })
   const { t } = useTranslation()
 
   return (
     <Container>
-      {/*<Heading class="waviy">{t("Let's create a new Axie in a few easy steps")}</Heading>*/}
+      <Axie1 src={axie1} alt="axie1" />
       <Heading>
         {t("Let's create a new Axie in a few easy steps")
           .split(' ')
@@ -141,6 +170,24 @@ export default function Create() {
         value={price}
         onChange={(e) => setPrice(e.target.value)}
       />
+      <StyledFormControl>
+        <InputLabel id="demo-simple-select-label" style={{ color: 'white' }}>
+          {t('Class')}
+        </InputLabel>
+        <StyledSelect
+          displayEmpty
+          value={classify}
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          label="Class"
+          onChange={(e) => setClassify(e.target.value)}
+        >
+          <MenuItem value="Beast">Beast</MenuItem>
+          <MenuItem value="Plant">Plant</MenuItem>
+          <MenuItem value="Bug">Bug</MenuItem>
+          <MenuItem value="Mech">Mech</MenuItem>
+        </StyledSelect>
+      </StyledFormControl>
       <StyledButton variant="primary">Create</StyledButton>
     </Container>
   )
