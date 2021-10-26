@@ -5,6 +5,7 @@ import 'inter-ui/inter.css'
 import './index.scss'
 import App from './pages/App'
 import reportWebVitals from './reportWebVitals'
+import './i18n.js'
 
 ReactDOM.render(
   <React.StrictMode>

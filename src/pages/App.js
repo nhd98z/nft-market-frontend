@@ -4,21 +4,36 @@ import Marketplace from './Marketplace'
 import Sell from './Sell'
 import Create from './Create'
 import { useHistory, useLocation } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { useEffect, useState } from 'react'
+import i18next from 'i18next'
 
 function App() {
   const { pathname } = useLocation()
   const history = useHistory()
-  console.log(`pathname`, pathname)
   const activeIndex =
     pathname === '/marketplace' ? 0 : pathname === '/sell' ? 1 : pathname === '/create' ? 2 : undefined
+  const { t } = useTranslation()
+  const [lng, setLng] = useState('en-US')
+
+  useEffect(() => {
+    const lng = window.localStorage.getItem('lng')
+    if (lng === 'ja-JP') {
+      i18next.changeLanguage(lng, (err) => {
+        if (err) return console.error(err)
+      })
+      setLng(lng)
+    }
+  }, [])
+
   return (
     <div className="app">
       <header className="header">
-        <div />
+        <div style={{ flex: 1 }} />
         <nav className="nav">
           <ul>
             <li className={activeIndex === 0 ? 'active' : ''} onClick={() => history.push('/marketplace')}>
-              Marketplace
+              {t('Marketplace')}
             </li>
             <li className={activeIndex === 1 ? 'active' : ''} onClick={() => history.push('/sell')}>
               Sell
@@ -28,7 +43,30 @@ function App() {
             </li>
           </ul>
         </nav>
-        <div class="account"></div>
+        <div className="lng-and-account">
+          <div
+            className="lng"
+            onClick={() => {
+              const lng = window.localStorage.getItem('lng')
+              if (lng === 'en-US') {
+                i18next.changeLanguage('ja-JP', (err) => {
+                  if (err) return console.error(err)
+                })
+                window.localStorage.setItem('lng', 'ja-JP')
+                setLng('ja-JP')
+              } else {
+                i18next.changeLanguage('en-US', (err) => {
+                  if (err) return console.error(err)
+                })
+                window.localStorage.setItem('lng', 'en-US')
+                setLng('en-US')
+              }
+            }}
+          >
+            {lng === 'ja-JP' ? '日本語' : 'EN'}
+          </div>
+          <div className="account">{t('Connect Metamask')}</div>
+        </div>
       </header>
       <Switch>
         <Route exact strict path="/marketplace" component={Marketplace} />

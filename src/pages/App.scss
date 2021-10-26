@@ -10,7 +10,7 @@
     left: 16px;
     width: calc(100vw - 32px);
     display: flex;
-    justify-content: space-between;
+    //justify-content: space-between;
 
     .nav {
       background: #ffeedd;
@@ -48,8 +48,35 @@
       }
     }
 
-    .account {
+    .lng-and-account {
+      color: black;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      flex: 1;
 
+      .lng {
+        background: #ffeedd;
+        padding: 8px 16px;
+        border-radius: 16px;
+        cursor: pointer;
+
+        &:hover {
+          background: #e5d2c3;
+        }
+      }
+
+      .account {
+        margin-left: 16px;
+        padding: 8px 16px;
+        border-radius: 16px;
+        background: #ffeedd;
+        cursor: pointer;
+
+        &:hover {
+          background: #e5d2c3;
+        }
+      }
     }
   }
 }
