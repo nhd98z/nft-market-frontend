@@ -7,6 +7,7 @@ import './index.scss'
 import App from './pages/App'
 import reportWebVitals from './reportWebVitals'
 import rootReducer from './states'
+import './i18n.js'
 
 ReactDOM.render(
   <React.StrictMode>
