@@ -7,6 +7,7 @@ import { useHistory, useLocation } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
 import i18next from 'i18next'
+import Web3Modal from 'web3modal'
 
 function App() {
   const { pathname } = useLocation()
@@ -15,6 +16,11 @@ function App() {
     pathname === '/marketplace' ? 0 : pathname === '/sell' ? 1 : pathname === '/create' ? 2 : undefined
   const { t } = useTranslation()
   const [lng, setLng] = useState('en-US')
+
+  const connectWallet = async () => {
+    const web3Modal = new Web3Modal()
+    const connection = await web3Modal.connect()
+  }
 
   useEffect(() => {
     const lng = window.localStorage.getItem('lng')
@@ -66,7 +72,7 @@ function App() {
           >
             {lng === 'ja-JP' ? '日本語' : 'EN'}
           </div>
-          <div tabIndex="0" className="account">
+          <div tabIndex="0" className="account" onClick={connectWallet}>
             {t('Connect Metamask')}
           </div>
         </div>
