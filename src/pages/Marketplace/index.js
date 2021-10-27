@@ -40,6 +40,11 @@ const RowGrid = styled(Box)`
     background: #decbbd;
     color: #000000;
     border-radius: 32px;
+    cursor: pointer;
+
+    :hover {
+      background: #fed;
+    }
   }
 `
 
