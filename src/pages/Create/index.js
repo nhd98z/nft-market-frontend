@@ -26,7 +26,7 @@ const Heading = styled.h1`
     font-family: 'Permanent Marker', cursive;
     position: relative;
     display: inline-block;
-    color: #fff;
+    color: #ffffff;
     animation: waviy 1s;
     animation-delay: calc(0.1s * var(--i));
   }
@@ -43,16 +43,15 @@ const Heading = styled.h1`
   }
 `
 
-const CssTextField = styled(TextField)(({ value, unit, width }) => ({
+export const CssTextField = styled(TextField)(({ value, unit, width }) => ({
   width: width,
   '& input': {
-    color: '#ffffff',
+    color: '#ffeedd',
   },
   '& label': {
     color: '#decbbd',
     display: value ? 'block' : 'flex',
     justifyContent: 'center',
-    // background: 'red',
     width: '100%',
   },
   '&:hover': {
@@ -93,18 +92,17 @@ const CssTextField = styled(TextField)(({ value, unit, width }) => ({
   },
 }))
 
-const StyledFormControl = styled(FormControl)(({ value }) => ({
-  width: '9vw',
-  color: '#ffffff',
+export const StyledFormControl = styled(FormControl)(({ width, value }) => ({
+  width: width,
+  color: '#ffeedd',
   '& label': {
     color: '#decbbd',
     display: value ? 'block' : 'flex',
     justifyContent: 'center',
-    // background: 'red',
     width: 'calc(100% - 36px)',
   },
   '& .MuiSelect-select': {
-    color: '#ffffff',
+    color: '#ffeedd',
   },
   '& label.Mui-focused': {
     display: 'block',
@@ -123,7 +121,7 @@ const StyledFormControl = styled(FormControl)(({ value }) => ({
   },
 }))
 
-const StyledSelect = styled(Select)({
+export const StyledSelect = styled(Select)({
   borderRadius: '32px !important',
 })
 
@@ -198,7 +196,7 @@ export default function Create() {
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
-        <StyledFormControl value={classify}>
+        <StyledFormControl width="9vw" value={classify}>
           <InputLabel style={{ color: '#decbbd' }}>{t('Class')}</InputLabel>
           <StyledSelect displayEmpty value={classify} label={t('Class')} onChange={(e) => setClassify(e.target.value)}>
             <MenuItem value="Beast">{t('Beast')}</MenuItem>
