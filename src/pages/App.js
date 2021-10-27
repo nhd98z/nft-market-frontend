@@ -1,13 +1,15 @@
-import './App.scss'
+import i18next from 'i18next'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useHistory, useLocation } from 'react-router'
 import { Redirect, Route, Switch } from 'react-router-dom'
+import Web3Modal from 'web3modal'
+import useBalance from '../hooks/useBalance'
+import useProvider from '../hooks/useProvier'
+import './App.scss'
+import Create from './Create'
 import Marketplace from './Marketplace'
 import Sell from './Sell'
-import Create from './Create'
-import { useHistory, useLocation } from 'react-router'
-import { useTranslation } from 'react-i18next'
-import { useEffect, useState } from 'react'
-import i18next from 'i18next'
-import Web3Modal from 'web3modal'
 
 function App() {
   const { pathname } = useLocation()
@@ -16,6 +18,9 @@ function App() {
     pathname === '/marketplace' ? 0 : pathname === '/sell' ? 1 : pathname === '/create' ? 2 : undefined
   const { t } = useTranslation()
   const [lng, setLng] = useState('en-US')
+  const provider = useProvider()
+  const balance = useBalance()
+  console.log('balance', balance)
 
   const connectWallet = async () => {
     const web3Modal = new Web3Modal()
@@ -72,9 +77,17 @@ function App() {
           >
             {lng === 'ja-JP' ? '日本語' : 'EN'}
           </div>
-          <div tabIndex="0" className="account" onClick={connectWallet}>
-            {t('Connect Metamask')}
-          </div>
+          {
+            balance !== '0' ? (
+              <div tabIndex="0" className="account">
+                {balance}
+              </div>
+            ) : (
+              <div tabIndex="0" className="account" onClick={connectWallet}>
+                {t('Connect Metamask')}
+              </div>
+            )
+          }
         </div>
       </header>
       <div className="app-body">
