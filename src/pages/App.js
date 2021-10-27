@@ -1,6 +1,7 @@
 import i18next from 'i18next'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import Web3Modal from 'web3modal'
@@ -12,19 +13,19 @@ import Marketplace from './Marketplace'
 import Sell from './Sell'
 
 function App() {
+  useProvider()
+  const account = useSelector((state) => state.provider.account)
   const { pathname } = useLocation()
   const history = useHistory()
   const activeIndex =
     pathname === '/marketplace' ? 0 : pathname === '/sell' ? 1 : pathname === '/create' ? 2 : undefined
   const { t } = useTranslation()
   const [lng, setLng] = useState('en-US')
-  const provider = useProvider()
   const balance = useBalance()
-  console.log('balance', balance)
 
   const connectWallet = async () => {
     const web3Modal = new Web3Modal()
-    const connection = await web3Modal.connect()
+    await web3Modal.connect()
   }
 
   useEffect(() => {
@@ -78,7 +79,7 @@ function App() {
             {lng === 'ja-JP' ? '日本語' : 'EN'}
           </div>
           {
-            balance !== '0' ? (
+            account !== '' ? (
               <div tabIndex="0" className="account">
                 {balance}
               </div>

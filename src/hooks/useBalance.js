@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux'
 const useBalance = () => {
   const [balance, setBalance] = useState('0')
   const providerState = useSelector((state) => state.provider)
-  console.log('providerState', providerState)
   useEffect(() => {
     ;(async () => {
       try {
@@ -14,7 +13,7 @@ const useBalance = () => {
           setBalance(balance.toString())
         }
       } catch (error) {
-        console.log('error', error)
+        console.error('error', error)
       }
     })()
   }, [providerState])

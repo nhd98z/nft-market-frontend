@@ -44,8 +44,6 @@ const useProvider = () => {
     window.addEventListener('load', loadProvider)
     return () => window.removeEventListener('load', loadProvider)
   }, [])
-
-  return {}
 }
 
 export default useProvider
