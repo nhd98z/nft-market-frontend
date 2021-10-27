@@ -5,7 +5,7 @@
   color: #ffffff;
 
   .header {
-    position: fixed;
+    position: absolute;
     top: 16px;
     left: 16px;
     width: calc(100vw - 32px);
@@ -81,7 +81,6 @@
 
   .app-body {
     width: 100vw;
-    height: 100px;
     padding: 98px 16px 16px 16px;
   }
 }

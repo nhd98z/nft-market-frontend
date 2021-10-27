@@ -61,7 +61,7 @@ function App() {
             className="lng"
             onClick={() => {
               const lng = window.localStorage.getItem('lng')
-              if (lng === 'en-US') {
+              if (lng === null || lng === 'en-US') {
                 i18next.changeLanguage('ja-JP', (err) => {
                   if (err) return console.error(err)
                 })

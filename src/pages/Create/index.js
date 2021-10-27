@@ -1,8 +1,9 @@
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material'
 import styled from '@emotion/styled'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import axie1 from '../../assets/axie-1.png'
+import * as MI from '@mui/icons-material'
 
 const Container = styled.div`
   display: flex;
@@ -25,7 +26,7 @@ const Heading = styled.h1`
     font-family: 'Permanent Marker', cursive;
     position: relative;
     display: inline-block;
-    color: #fff;
+    color: #ffffff;
     animation: waviy 1s;
     animation-delay: calc(0.1s * var(--i));
   }
@@ -42,16 +43,15 @@ const Heading = styled.h1`
   }
 `
 
-const CssTextField = styled(TextField)(({ value, unit, width }) => ({
+export const CssTextField = styled(TextField)(({ value, unit, width }) => ({
   width: width,
   '& input': {
-    color: '#ffffff',
+    color: '#ffeedd',
   },
   '& label': {
     color: '#decbbd',
     display: value ? 'block' : 'flex',
     justifyContent: 'center',
-    // background: 'red',
     width: '100%',
   },
   '&:hover': {
@@ -92,11 +92,36 @@ const CssTextField = styled(TextField)(({ value, unit, width }) => ({
   },
 }))
 
-const StyledFormControl = styled(FormControl)({
-  width: '20vw',
-})
+export const StyledFormControl = styled(FormControl)(({ width, value }) => ({
+  width: width,
+  color: '#ffeedd',
+  '& label': {
+    color: '#decbbd',
+    display: value ? 'block' : 'flex',
+    justifyContent: 'center',
+    width: 'calc(100% - 36px)',
+  },
+  '& .MuiSelect-select': {
+    color: '#ffeedd',
+  },
+  '& label.Mui-focused': {
+    display: 'block',
+  },
+  '& svg': {
+    color: '#decbbd',
+  },
+  '& fieldset': {
+    borderColor: '#decbbd',
+  },
+  '&:hover fieldset': {
+    borderColor: '#ffeedd !important',
+  },
+  '& .Mui-focused fieldset': {
+    borderColor: '#ffeedd !important',
+  },
+}))
 
-const StyledSelect = styled(Select)({
+export const StyledSelect = styled(Select)({
   borderRadius: '32px !important',
 })
 
@@ -156,39 +181,104 @@ export default function Create() {
       </Heading>
       <CssTextField
         width="20vw"
-        label="Name"
+        label={t('Name')}
         variant="outlined"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
-      <CssTextField
-        width="20vw"
-        unit="ETH"
-        type="number"
-        label="Price"
-        variant="outlined"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-      />
-      <StyledFormControl>
-        <InputLabel id="demo-simple-select-label" style={{ color: 'white' }}>
-          {t('Class')}
-        </InputLabel>
-        <StyledSelect
-          displayEmpty
-          value={classify}
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          label="Class"
-          onChange={(e) => setClassify(e.target.value)}
+      <Box width="20vw" display="flex" justifyContent="space-between">
+        <CssTextField
+          width="9vw"
+          unit="ETH"
+          type="number"
+          label={t('Price')}
+          variant="outlined"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
+        <StyledFormControl width="9vw" value={classify}>
+          <InputLabel style={{ color: '#decbbd' }}>{t('Class')}</InputLabel>
+          <StyledSelect displayEmpty value={classify} label={t('Class')} onChange={(e) => setClassify(e.target.value)}>
+            <MenuItem value="Beast">{t('Beast')}</MenuItem>
+            <MenuItem value="Plant">{t('Plant')}</MenuItem>
+            <MenuItem value="Bug">{t('Bug')}</MenuItem>
+            <MenuItem value="Mech">{t('Mech')}</MenuItem>
+          </StyledSelect>
+        </StyledFormControl>
+      </Box>
+      <Box width="20vw" display="flex" justifyContent="space-between">
+        <Box
+          display="flex"
+          alignItems="center"
+          tabIndex="0"
+          style={{ cursor: 'pointer' }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowUp') {
+              setStats((prev) => ({ ...prev, health: Math.min(prev.health + 1, 100) }))
+            } else if (e.key === 'ArrowDown') {
+              setStats((prev) => ({ ...prev, health: Math.max(prev.health - 1, 1) }))
+            }
+          }}
+          onClick={() => setStats((prev) => ({ ...prev, health: Math.min(prev.health + 1, 100) }))}
         >
-          <MenuItem value="Beast">Beast</MenuItem>
-          <MenuItem value="Plant">Plant</MenuItem>
-          <MenuItem value="Bug">Bug</MenuItem>
-          <MenuItem value="Mech">Mech</MenuItem>
-        </StyledSelect>
-      </StyledFormControl>
-      <StyledButton variant="primary">Create</StyledButton>
+          <MI.Favorite style={{ fill: '#3ac279' }} />
+          <Typography fontSize="20px">{stats.health}</Typography>
+        </Box>
+        <Box
+          display="flex"
+          alignItems="center"
+          tabIndex="0"
+          style={{ cursor: 'pointer' }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowUp') {
+              setStats((prev) => ({ ...prev, speed: Math.min(prev.speed + 1, 100) }))
+            } else if (e.key === 'ArrowDown') {
+              setStats((prev) => ({ ...prev, speed: Math.max(prev.speed - 1, 1) }))
+            }
+          }}
+          onClick={() => setStats((prev) => ({ ...prev, speed: Math.min(prev.speed + 1, 100) }))}
+        >
+          <MI.FlashOn style={{ fill: '#f7ac0a' }} />
+          <Typography fontSize="20px">{stats.speed}</Typography>
+        </Box>
+        <Box
+          display="flex"
+          alignItems="center"
+          tabIndex="0"
+          style={{ cursor: 'pointer' }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowUp') {
+              setStats((prev) => ({ ...prev, skill: Math.min(prev.skill + 1, 100) }))
+            } else if (e.key === 'ArrowDown') {
+              setStats((prev) => ({ ...prev, skill: Math.max(prev.skill - 1, 1) }))
+            }
+          }}
+          onClick={() => setStats((prev) => ({ ...prev, skill: Math.min(prev.skill + 1, 100) }))}
+        >
+          <MI.StarRate style={{ fill: '#9166e0' }} />
+          <Typography lineHeight="normal" fontSize="20px">
+            {stats.skill}
+          </Typography>
+        </Box>
+        <Box
+          display="flex"
+          alignItems="center"
+          tabIndex="0"
+          style={{ cursor: 'pointer' }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowUp') {
+              setStats((prev) => ({ ...prev, morale: Math.min(prev.morale + 1, 100) }))
+            } else if (e.key === 'ArrowDown') {
+              setStats((prev) => ({ ...prev, morale: Math.max(prev.morale - 1, 1) }))
+            }
+          }}
+          onClick={() => setStats((prev) => ({ ...prev, morale: Math.min(prev.morale + 1, 100) }))}
+        >
+          <MI.LocalFireDepartment style={{ fill: '#c23a3a' }} />
+          <Typography fontSize="20px">{stats.morale}</Typography>
+        </Box>
+      </Box>
+      <StyledButton variant="primary">{t('Create')}</StyledButton>
     </Container>
   )
 }
