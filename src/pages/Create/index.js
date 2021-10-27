@@ -221,6 +221,7 @@ export default function Create() {
               setStats((prev) => ({ ...prev, health: Math.max(prev.health - 1, 1) }))
             }
           }}
+          onClick={() => setStats((prev) => ({ ...prev, health: Math.min(prev.health + 1, 100) }))}
         >
           <MI.Favorite style={{ fill: '#3ac279' }} />
           <Typography fontSize="20px">{stats.health}</Typography>
@@ -237,6 +238,7 @@ export default function Create() {
               setStats((prev) => ({ ...prev, speed: Math.max(prev.speed - 1, 1) }))
             }
           }}
+          onClick={() => setStats((prev) => ({ ...prev, speed: Math.min(prev.speed + 1, 100) }))}
         >
           <MI.FlashOn style={{ fill: '#f7ac0a' }} />
           <Typography fontSize="20px">{stats.speed}</Typography>
@@ -253,6 +255,7 @@ export default function Create() {
               setStats((prev) => ({ ...prev, skill: Math.max(prev.skill - 1, 1) }))
             }
           }}
+          onClick={() => setStats((prev) => ({ ...prev, skill: Math.min(prev.skill + 1, 100) }))}
         >
           <MI.StarRate style={{ fill: '#9166e0' }} />
           <Typography lineHeight="normal" fontSize="20px">
@@ -271,6 +274,7 @@ export default function Create() {
               setStats((prev) => ({ ...prev, morale: Math.max(prev.morale - 1, 1) }))
             }
           }}
+          onClick={() => setStats((prev) => ({ ...prev, morale: Math.min(prev.morale + 1, 100) }))}
         >
           <MI.LocalFireDepartment style={{ fill: '#c23a3a' }} />
           <Typography fontSize="20px">{stats.morale}</Typography>
