@@ -84,6 +84,7 @@ export default function Marketplace() {
             displayEmpty
             label={t('Type')}
             size="small"
+            defaultValue="All"
             onChange={(e) => setFilterByOrderType(e.target.value)}
           >
             <MenuItem value="All">{t('All')}</MenuItem>
@@ -99,6 +100,7 @@ export default function Marketplace() {
             displayEmpty
             label={t('Class')}
             size="small"
+            defaultValue="All"
             onChange={(e) => setFilterByClassify(e.target.value)}
           >
             <MenuItem value="All">{t('All')}</MenuItem>

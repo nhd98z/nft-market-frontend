@@ -1,30 +1,29 @@
-import './App.scss'
+import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
+import { useHistory, useLocation } from 'react-router'
 import { Redirect, Route, Switch } from 'react-router-dom'
+import Web3Modal from 'web3modal'
+import useProvider from '../hooks/useProvider'
+import './App.scss'
+import Create from './Create'
 import Marketplace from './Marketplace'
 import Sell from './Sell'
-import Create from './Create'
-import { useHistory, useLocation } from 'react-router'
-import { useTranslation } from 'react-i18next'
-import { useEffect, useState } from 'react'
-import i18next from 'i18next'
+import useLanguage from '../hooks/useLanguage'
 
 function App() {
+  useProvider()
+  const account = useSelector((state) => state.provider.account)
   const { pathname } = useLocation()
   const history = useHistory()
   const activeIndex =
     pathname === '/marketplace' ? 0 : pathname === '/sell' ? 1 : pathname === '/create' ? 2 : undefined
   const { t } = useTranslation()
-  const [lng, setLng] = useState('en-US')
+  const [language, toggleLanguage] = useLanguage()
 
-  useEffect(() => {
-    const lng = window.localStorage.getItem('lng')
-    if (lng === 'ja-JP') {
-      i18next.changeLanguage(lng, (err) => {
-        if (err) return console.error(err)
-      })
-      setLng(lng)
-    }
-  }, [])
+  const connectWallet = async () => {
+    const web3Modal = new Web3Modal()
+    await web3Modal.connect()
+  }
 
   return (
     <div className="app">
@@ -44,31 +43,18 @@ function App() {
           </ul>
         </nav>
         <div className="lng-and-account">
-          <div
-            tabIndex="0"
-            className="lng"
-            onClick={() => {
-              const lng = window.localStorage.getItem('lng')
-              if (lng === null || lng === 'en-US') {
-                i18next.changeLanguage('ja-JP', (err) => {
-                  if (err) return console.error(err)
-                })
-                window.localStorage.setItem('lng', 'ja-JP')
-                setLng('ja-JP')
-              } else {
-                i18next.changeLanguage('en-US', (err) => {
-                  if (err) return console.error(err)
-                })
-                window.localStorage.setItem('lng', 'en-US')
-                setLng('en-US')
-              }
-            }}
-          >
-            {lng === 'ja-JP' ? '日本語' : 'EN'}
+          <div tabIndex="0" className="lng" onClick={() => toggleLanguage()}>
+            {language === 'ja-JP' ? '日本語' : 'EN'}
           </div>
-          <div tabIndex="0" className="account">
-            {t('Connect Metamask')}
-          </div>
+          {account ? (
+            <div tabIndex="0" className="account">
+              {`${account.slice(0, 4)}...${account.slice(account.length - 5, account.length)}`}
+            </div>
+          ) : (
+            <div tabIndex="0" className="account" onClick={connectWallet}>
+              {t('Connect Metamask')}
+            </div>
+          )}
         </div>
       </header>
       <div className="app-body">
