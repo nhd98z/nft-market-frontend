@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-export function div1e18(balance) {
-  const big = new BigNumber(balance).div(1e18)
-  return big
+export function getValueAfterDivideForDecimals(value, decimals) {
+  const big = new BigNumber(value).div(new BigNumber(10).pow(decimals))
+  return big.decimalPlaces(5).toString()
 }
