@@ -7,25 +7,25 @@ const useProvider = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    const accountChangeHandler = (accounts) => {
+      if (accounts.length > 0) {
+        dispatch(fetchDataWithAccount(accounts[0]))
+      }
+    }
+
+    const networkChangeHandler = (chainId) => {
+      dispatch(fetchDataWithChainId(parseInt(chainId, 16)))
+    }
+
     const loadProvider = async () => {
-      let currentProvider
       try {
         if (window.ethereum) {
           // detect Metamask account change
-          window.ethereum.on &&
-            window.ethereum.on('accountsChanged', function (accounts) {
-              console.log('accountsChanged')
-              if (accounts.length > 0) {
-                dispatch(fetchDataWithAccount(accounts[0]))
-              }
-            })
+          window.ethereum.on && window.ethereum.on('accountsChanged', accountChangeHandler)
           // detect Network account change
-          window.ethereum.on &&
-            window.ethereum.on('chainChanged', function (chain) {
-              dispatch(fetchDataWithChainId(parseInt(chain, 16)))
-            })
+          window.ethereum.on && window.ethereum.on('chainChanged', networkChangeHandler)
           // use MetaMask's provider
-          currentProvider = new ethers.providers.Web3Provider(window.ethereum)
+          const currentProvider = new ethers.providers.Web3Provider(window.ethereum)
           dispatch(fetchDataWithProvider(currentProvider))
           // set provider
           const currentSigner = await currentProvider.getSigner()
@@ -35,15 +35,19 @@ const useProvider = () => {
           const web3Account = await currentSigner.getAddress()
           dispatch(fetchDataWithAccount(web3Account))
         } else {
-          console.error('Metamask not install!!!')
+          throw new Error('Metamask not install!!!')
         }
       } catch (error) {
         console.error('error', error)
       }
     }
     window.addEventListener('load', loadProvider)
-    return () => window.removeEventListener('load', loadProvider)
-  }, [])
+    return () => {
+      window.removeEventListener('load', loadProvider)
+      window.ethereum.on && window.ethereum.removeListener('accountsChanged', accountChangeHandler)
+      window.ethereum.on && window.ethereum.removeListener('chainChanged', networkChangeHandler)
+    }
+  }, [dispatch])
 }
 
 export default useProvider

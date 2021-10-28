@@ -1,13 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-// init state
 const initialState = {
-  provider: null,
-  account: '',
+  provider: undefined,
+  account: undefined,
   chainId: 0,
 }
 
-// define action
 export const fetchDataWithProvider = createAsyncThunk('provider/updateProvider', async (newProvider, { dispatch }) => {
   dispatch(updateProvider(newProvider))
 })
@@ -15,9 +13,11 @@ export const fetchDataWithProvider = createAsyncThunk('provider/updateProvider',
 export const fetchDataWithChainId = createAsyncThunk('provider/updateChainId', async (newChainId, { dispatch }) => {
   dispatch(updateChainId(newChainId))
 })
+
 export const fetchDataWithAccount = createAsyncThunk('provider/updateAccount', async (newAccount, { dispatch }) => {
   dispatch(updateAccount(newAccount))
 })
+
 export const providerSlice = createSlice({
   name: 'provider',
   initialState,
@@ -34,8 +34,8 @@ export const providerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-    .addCase(fetchDataWithProvider.fulfilled, (state, action) => {})
-    .addCase(fetchDataWithChainId.fulfilled, (state, action) => {})
+      .addCase(fetchDataWithProvider.fulfilled, (state, action) => {})
+      .addCase(fetchDataWithChainId.fulfilled, (state, action) => {})
   },
 })
 

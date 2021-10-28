@@ -3,12 +3,13 @@ import { useSelector } from 'react-redux'
 
 const useBalance = () => {
   const [balance, setBalance] = useState('0')
-  const providerState = useSelector((state) => state.provider)
+  const provider = useSelector((state) => state.provider)
+
   useEffect(() => {
     ;(async () => {
       try {
-        if (providerState && providerState.account) {
-          const signer = await providerState.provider.getSigner()
+        if (provider && provider.account) {
+          const signer = await provider.provider.getSigner()
           const balance = await signer.getBalance()
           setBalance(balance.toString())
         }
@@ -16,7 +17,8 @@ const useBalance = () => {
         console.error('error', error)
       }
     })()
-  }, [providerState])
+  }, [provider])
+
   return balance
 }
 

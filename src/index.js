@@ -9,6 +9,8 @@ import reportWebVitals from './reportWebVitals'
 import rootReducer from './states'
 import './i18n.js'
 
+window.store = rootReducer.getState()
+
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
