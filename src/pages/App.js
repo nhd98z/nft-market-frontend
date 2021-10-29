@@ -7,7 +7,6 @@ import useProvider from '../hooks/useProvider'
 import './App.scss'
 import Create from './Create'
 import Marketplace from './Marketplace'
-import Sell from './Sell'
 import useLanguage from '../hooks/useLanguage'
 
 function App() {
@@ -15,8 +14,7 @@ function App() {
   const account = useSelector((state) => state.provider.account)
   const { pathname } = useLocation()
   const history = useHistory()
-  const activeIndex =
-    pathname === '/marketplace' ? 0 : pathname === '/sell' ? 1 : pathname === '/create' ? 2 : undefined
+  const activeIndex = pathname === '/marketplace' ? 0 : pathname === '/create' ? 1 : undefined
   const { t } = useTranslation()
   const [language, toggleLanguage] = useLanguage()
 
@@ -34,9 +32,6 @@ function App() {
             <li tabIndex="0" className={activeIndex === 0 ? 'active' : ''} onClick={() => history.push('/marketplace')}>
               {t('Marketplace')}
             </li>
-            <li tabIndex="0" className={activeIndex === 1 ? 'active' : ''} onClick={() => history.push('/sell')}>
-              {t('Sell')}
-            </li>
             <li tabIndex="0" className={activeIndex === 2 ? 'active' : ''} onClick={() => history.push('/create')}>
               {t('Create')}
             </li>
@@ -48,7 +43,7 @@ function App() {
           </div>
           {account ? (
             <div tabIndex="0" className="account">
-              {`${account.slice(0, 4)}...${account.slice(account.length - 5, account.length)}`}
+              {`${account.slice(0, 6)}...${account.slice(account.length - 4, account.length)}`}
             </div>
           ) : (
             <div tabIndex="0" className="account" onClick={connectWallet}>
@@ -60,7 +55,6 @@ function App() {
       <div className="app-body">
         <Switch>
           <Route exact strict path="/marketplace" component={Marketplace} />
-          <Route exact strict path="/sell" component={Sell} />
           <Route exact strict path="/create" component={Create} />
           <Route component={() => <Redirect to="/marketplace" />} />
         </Switch>

@@ -3,7 +3,8 @@ import styled from '@emotion/styled'
 import { CssTextField, StyledFormControl, StyledSelect } from '../Create'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
-import Card from './Card'
+import Card from '../../components/Card'
+import Modal from '../../components/Modal'
 
 const Container = styled(Box)`
   width: calc(100% - 16px);
@@ -32,15 +33,6 @@ const RowGrid = styled(Box)`
   grid-template-columns: 1fr 1fr 1fr 1fr;
   place-items: center;
   row-gap: 45px;
-
-  > div {
-    height: 285px;
-    width: 225px;
-    background: #decbbd;
-    color: #000000;
-    border-radius: 32px;
-    cursor: pointer;
-  }
 `
 
 export default function Marketplace() {
@@ -49,8 +41,17 @@ export default function Marketplace() {
   const [filterByOrderType, setFilterByOrderType] = useState('All')
   const [filterByClassify, setFilterByClassify] = useState('All')
 
+  const [openModal, setOpenModal] = useState(false)
+  console.log(`openModal`, openModal)
+
+  const onCloseModal = () => {
+    setOpenModal(false)
+    console.log(`I'm here: `)
+  }
+
   return (
     <Container>
+      <Modal open={openModal} onClose={onCloseModal} />
       <RowControl display="flex" justifyContent="center">
         <CssTextField width="15vw" label={t('Search...')} variant="outlined" size="small" />
         <StyledFormControl width="160px" value={sortBy}>
@@ -85,6 +86,7 @@ export default function Marketplace() {
             <MenuItem value="All">{t('All')}</MenuItem>
             <MenuItem value="Buy new">{t('Buy new')}</MenuItem>
             <MenuItem value="Exchange">{t('Exchange')}</MenuItem>
+            <MenuItem value="My Axie">{t('My Axie')}</MenuItem>
           </StyledSelect>
         </StyledFormControl>
         <StyledFormControl width="120px" value={filterByClassify}>
@@ -108,8 +110,8 @@ export default function Marketplace() {
       </RowControl>
       <RowGridWrapper>
         <RowGrid>
-          <Card />
-          <Card />
+          <Card onClick={() => setOpenModal(true)} />
+          <Card onClick={() => setOpenModal(true)} />
         </RowGrid>
       </RowGridWrapper>
     </Container>
