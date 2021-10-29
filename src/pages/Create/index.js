@@ -1,5 +1,6 @@
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material'
 import styled from '@emotion/styled'
+import isPropValid from '@emotion/is-prop-valid'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import axie1 from '../../assets/axie-1.png'
@@ -43,54 +44,55 @@ const Heading = styled.h1`
   }
 `
 
-export const CssTextField = styled(TextField)(({ value, unit, width }) => ({
-  width: width,
-  '& input': {
-    color: '#ffeedd',
-  },
-  '& label': {
-    color: '#decbbd',
-    display: value ? 'block' : 'flex',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  '&:hover': {
-    label: {
-      color: '#ffeedd',
+export const CssTextField = styled(TextField, { shouldForwardProp: isPropValid })(
+  ({ value, unit, width, myBackgroundColor, myColor }) => ({
+    width: width,
+    '& input': {
+      color: myBackgroundColor ?? '#ffeedd',
     },
-  },
-  '& label.Mui-focused': {
-    color: '#ffeedd',
-    display: 'block',
-  },
-  '& .MuiInput-underline:after': {
-    borderBottomColor: '#ffeedd',
-  },
-  '& .MuiOutlinedInput-root': {
-    borderRadius: '32px',
-    '& fieldset': {
-      borderColor: '#decbbd',
+    '& label': {
+      color: myColor ?? '#decbbd',
+      display: value ? 'block' : 'flex',
+      justifyContent: 'center',
+      width: '100%',
     },
-    '&:hover fieldset': {
-      borderColor: '#ffeedd',
+    '&:hover': {
+      label: {
+        color: myBackgroundColor ?? '#ffeedd',
+      },
     },
-    '&.Mui-focused fieldset': {
-      borderColor: '#ffeedd',
+    '& label.Mui-focused': {
+      color: myBackgroundColor ?? '#ffeedd',
+      display: 'block',
     },
-  },
-  '&::after': {
-    content: value && unit ? "'" + unit + "'" : "''",
-    // background: 'red',
-    position: 'absolute',
-    top: 0,
-    padding: 0,
-    margin: 0,
-    right: '16px',
-    display: 'flex',
-    alignItems: 'center',
-    height: '100%',
-  },
-}))
+    '& .MuiInput-underline:after': {
+      borderBottomColor: myBackgroundColor ?? '#ffeedd',
+    },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '32px',
+      '& fieldset': {
+        borderColor: myColor ?? '#decbbd',
+      },
+      '&:hover fieldset': {
+        borderColor: myBackgroundColor ?? '#ffeedd',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: myBackgroundColor ?? '#ffeedd',
+      },
+    },
+    '&::after': {
+      content: value && unit ? "'" + unit + "'" : "''",
+      position: 'absolute',
+      top: 0,
+      padding: 0,
+      margin: 0,
+      right: '16px',
+      display: 'flex',
+      alignItems: 'center',
+      height: '100%',
+    },
+  }),
+)
 
 export const StyledFormControl = styled(FormControl)(({ width, value }) => ({
   width: width,
