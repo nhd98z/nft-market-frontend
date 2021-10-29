@@ -84,7 +84,7 @@ export default function Marketplace() {
             <MenuItem value="All">{t('All')}</MenuItem>
             <MenuItem value="Buy new">{t('Buy new')}</MenuItem>
             <MenuItem value="Exchange">{t('Exchange')}</MenuItem>
-            <MenuItem value="My Axie">{t('My Axie')}</MenuItem>
+            <MenuItem value="My Vnext">{t('My Vnext')}</MenuItem>
           </StyledSelect>
         </StyledFormControl>
         <StyledFormControl width="120px" value={filterByClassify}>

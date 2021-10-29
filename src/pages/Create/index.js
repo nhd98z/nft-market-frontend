@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import axie1 from '../../assets/axie-1.png'
 import * as MI from '@mui/icons-material'
+import { ClassItem } from '../../constants/index'
 
 const Container = styled.div`
   display: flex;
@@ -164,16 +165,17 @@ const Axie1 = styled(Axie)`
 
 export default function Create() {
   const [name, setName] = useState('')
+  const [urlImage, setUrlImage] = useState('')
   const [price, setPrice] = useState('')
   const [classify, setClassify] = useState('') // BEAST PLANT BUG MECH
   const [stats, setStats] = useState({ health: 1, speed: 1, skill: 1, morale: 1 })
   const { t } = useTranslation()
-
+  console.log('ClassItem', ClassItem)
   return (
     <Container>
       <Axie1 src={axie1} alt="axie1" />
       <Heading>
-        {t("Let's create a new Axie in a few easy steps")
+        {t("Let's create a new Vnext in a few easy steps")
           .split(' ')
           .map((word, index) => (
             <span key={index} style={{ '--i': index }}>
@@ -186,6 +188,13 @@ export default function Create() {
         label={t('Name')}
         variant="outlined"
         value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+       <CssTextField
+        width="20vw"
+        label={t('Url Image')}
+        variant="outlined"
+        value={urlImage}
         onChange={(e) => setName(e.target.value)}
       />
       <Box width="20vw" display="flex" justifyContent="space-between">
@@ -201,10 +210,13 @@ export default function Create() {
         <StyledFormControl width="9vw" value={classify}>
           <InputLabel style={{ color: '#decbbd' }}>{t('Class')}</InputLabel>
           <StyledSelect displayEmpty value={classify} label={t('Class')} onChange={(e) => setClassify(e.target.value)}>
-            <MenuItem value="Beast">{t('Beast')}</MenuItem>
-            <MenuItem value="Plant">{t('Plant')}</MenuItem>
-            <MenuItem value="Bug">{t('Bug')}</MenuItem>
-            <MenuItem value="Mech">{t('Mech')}</MenuItem>
+            {
+              Object.keys(ClassItem).map(item => {
+                return (
+                  <MenuItem value={ClassItem[item]} style={{textTransform: 'capitalize'}}>{t(item.toLocaleLowerCase())}</MenuItem>
+                )
+              })
+            }
           </StyledSelect>
         </StyledFormControl>
       </Box>

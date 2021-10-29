@@ -39,7 +39,7 @@ const StyledButton = styled(Button)`
 export default forwardRef(function Card(props, ref) {
   const { t } = useTranslation()
   const { imageWidth, showBuyOrSellButton, history, onClose } = props
-  const isSell = Math.random() < 0.5
+  const [isSell, setIsSell] = useState(Math.random() < 0.5)
   const [sellPrice, setSellPrice] = useState('')
 
   return (
