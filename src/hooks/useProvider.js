@@ -31,7 +31,7 @@ const useProvider = () => {
           // set provider
           const currentSigner = await currentProvider.getSigner()
           // set chainID
-          // dispatch(fetchDataWithChainId(await currentSigner.getChainId()))
+          dispatch(fetchDataWithChainId(await currentSigner.getChainId()))
           // set account
           const web3Account = await currentSigner.getAddress()
           dispatch(fetchDataWithAccount(web3Account))
