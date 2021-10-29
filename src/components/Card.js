@@ -4,6 +4,8 @@ import axie1 from '../assets/axie-1.png'
 import { useTranslation } from 'react-i18next'
 import styled from '@emotion/styled'
 import Swal from 'sweetalert2'
+import { CssTextField } from '../pages/Create'
+import { forwardRef, useState } from 'react'
 
 const StyledCard = styled(Box)`
   height: 285px;
@@ -11,13 +13,13 @@ const StyledCard = styled(Box)`
   background: #decbbd;
   color: #000000;
   border-radius: 32px;
-  cursor: pointer;
+  cursor: ${({ showBuyOrSellButton }) => (showBuyOrSellButton ? 'normal' : 'pointer')};
   position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 
-  ${({ showBuyButton }) => (showBuyButton ? `` : `:hover { background: #ffeedd; }`)}
+  ${({ showBuyOrSellButton }) => (showBuyOrSellButton ? `` : `:hover { background: #ffeedd; }`)}
 `
 
 const StyledButton = styled(Button)`
@@ -34,9 +36,11 @@ const StyledButton = styled(Button)`
   }
 `
 
-export default function Card(props) {
+export default forwardRef(function Card(props, ref) {
   const { t } = useTranslation()
-  const { imageWidth, showBuyButton, history } = props
+  const { imageWidth, showBuyOrSellButton, history, onClose } = props
+  const isSell = Math.random() < 0.5
+  const [sellPrice, setSellPrice] = useState('')
 
   return (
     <StyledCard {...props}>
@@ -84,15 +88,32 @@ export default function Card(props) {
         </Box>
         <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1">
           <img src={axie1} alt="axie1" style={{ width: imageWidth ?? '160px', height: 'fit-content' }} />
-          <Typography fontSize="20px" fontWeight={400}>
-            1.28 ETH
-          </Typography>
+          {showBuyOrSellButton && isSell ? (
+            <CssTextField
+              width="50%"
+              unit="ETH"
+              type="number"
+              label={t('Price')}
+              variant="outlined"
+              myBackgroundColor="#000000"
+              myColor="#000000"
+              value={sellPrice}
+              onChange={(e) => {
+                setSellPrice(e.target.value)
+              }}
+            />
+          ) : (
+            <Typography fontSize="20px" fontWeight={400}>
+              1.28 ETH
+            </Typography>
+          )}
         </Box>
-        {showBuyButton && (
+        {showBuyOrSellButton && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
             onClick={() => {
+              onClose && onClose()
               Swal.fire({
                 position: 'bottom',
                 icon: 'success',
@@ -114,7 +135,7 @@ export default function Card(props) {
               })
             }}
           >
-            {t('Buy')}
+            {isSell ? t('Sell') : t('Buy')}
           </StyledButton>
         )}
       </Box>
@@ -167,4 +188,4 @@ export default function Card(props) {
       )}
     </StyledCard>
   )
-}
+})

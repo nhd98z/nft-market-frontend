@@ -1,10 +1,11 @@
 import { ethers } from 'ethers'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { fetchDataWithAccount, fetchDataWithChainId, fetchDataWithProvider } from '../states/providerSlice'
+import { fetchDataWithAccount, fetchDataWithChainId } from '../states/providerSlice'
 
 const useProvider = () => {
   const dispatch = useDispatch()
+  const [provider, setProvider] = useState()
 
   useEffect(() => {
     const accountChangeHandler = (accounts) => {
@@ -26,11 +27,11 @@ const useProvider = () => {
           window.ethereum.on && window.ethereum.on('chainChanged', networkChangeHandler)
           // use MetaMask's provider
           const currentProvider = new ethers.providers.Web3Provider(window.ethereum)
-          dispatch(fetchDataWithProvider(currentProvider))
+          setProvider(currentProvider)
           // set provider
           const currentSigner = await currentProvider.getSigner()
           // set chainID
-          dispatch(fetchDataWithChainId(await currentSigner.getChainId()))
+          // dispatch(fetchDataWithChainId(await currentSigner.getChainId()))
           // set account
           const web3Account = await currentSigner.getAddress()
           dispatch(fetchDataWithAccount(web3Account))
@@ -48,6 +49,8 @@ const useProvider = () => {
       window.ethereum.on && window.ethereum.removeListener('chainChanged', networkChangeHandler)
     }
   }, [dispatch])
+
+  return provider
 }
 
 export default useProvider

@@ -42,11 +42,9 @@ export default function Marketplace() {
   const [filterByClassify, setFilterByClassify] = useState('All')
 
   const [openModal, setOpenModal] = useState(false)
-  console.log(`openModal`, openModal)
 
   const onCloseModal = () => {
     setOpenModal(false)
-    console.log(`I'm here: `)
   }
 
   return (
@@ -110,8 +108,8 @@ export default function Marketplace() {
       </RowControl>
       <RowGridWrapper>
         <RowGrid>
-          <Card onClick={() => setOpenModal(true)} />
-          <Card onClick={() => setOpenModal(true)} />
+          <Card onClick={() => setOpenModal(true)} onClose={onCloseModal} />
+          <Card onClick={() => setOpenModal(true)} onClose={onCloseModal} />
         </RowGrid>
       </RowGridWrapper>
     </Container>
