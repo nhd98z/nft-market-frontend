@@ -31,7 +31,7 @@ const useCreateToken = () => {
             .createToken(tokenURI, classId, level, health, speed, skill, morale)
             .then((txResponse) => {
               // TODO: tx hash
-              saveTxPending('111')
+              saveTxPending(txResponse.hash)
               return txResponse
             })
             .catch((err) => console.log('err', err))
