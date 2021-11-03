@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import useProvider from './useProvider'
 import { ethers } from 'ethers'
-import { ABI, NTF_ADDRESS } from '../constants'
+import { ABI, NFT_ADDRESS } from '../constants'
 
 const useNtfContract = () => {
   const [nftContract, setNftContract] = useState()
@@ -12,9 +12,9 @@ const useNtfContract = () => {
   useEffect(() => {
     ;(async () => {
       try {
-        if (provider && chainId &&  NTF_ADDRESS[chainId] && ABI['ntf'] ) {
+        if (provider && chainId &&  NFT_ADDRESS[chainId] && ABI['ntf'] ) {
           const currentSigner = await provider.getSigner()
-          const contract = new ethers.Contract(NTF_ADDRESS[chainId], ABI['ntf'], provider)
+          const contract = new ethers.Contract(NFT_ADDRESS[chainId], ABI['ntf'], provider)
           setNftContract(contract.connect(currentSigner))
         }
       } catch (error) {

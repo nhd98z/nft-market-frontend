@@ -12,15 +12,21 @@ export const ABI = {
   ntfMarket: NFT_MARKET_ABI,
 }
 
-export const NTF_ADDRESS = {
-  [ChainId.MAINNET]: '',
-  [ChainId.ROPSTEN]: '',
+export const NFT_ADDRESS = {
+  [ChainId.MAINNET]: undefined,
+  [ChainId.ROPSTEN]: undefined,
   [ChainId.RINKEBY]: '0xEFa80AB89b567Af03855427FE9080Eb269038a7A',
 }
-export const NTF_MARKET_ADDRESS = {
-  [ChainId.MAINNET]: '',
-  [ChainId.ROPSTEN]: '',
+export const NFT_MARKET_ADDRESS = {
+  [ChainId.MAINNET]: undefined,
+  [ChainId.ROPSTEN]: undefined,
   [ChainId.RINKEBY]: '0xDC7d62e844c929F3Be233402A87CF620f39f8133',
+}
+
+export const SECOND_PER_BLOCK = {
+  [ChainId.MAINNET]: undefined,
+  [ChainId.ROPSTEN]: undefined,
+  [ChainId.RINKEBY]: 14,
 }
 
 export const ClassItem = {
@@ -29,6 +35,8 @@ export const ClassItem = {
   BUG: 3,
   MECH: 4,
 }
+
+export const SECONDS_TIME_MAX_SELL = 3600 * 24 * 7 *2 // 2 weeks
 
 export const LEVEL_UP_FEE = 0.001 // Ether
 
