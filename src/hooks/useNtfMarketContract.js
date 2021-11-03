@@ -2,11 +2,10 @@ import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { ABI, NFT_MARKET_ADDRESS } from '../constants'
-import useProvider from './useProvider'
 
 const useNtfMarketContract = () => {
   const [nftMarketContract, setNftMarketContract] = useState()
-  const provider = useProvider()
+  const provider = window.providerEth
   const chainId = useSelector((state) => state.provider.chainId)
 
   useEffect(() => {

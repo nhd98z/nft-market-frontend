@@ -7,6 +7,7 @@ import axie1 from '../../assets/axie-1.png'
 import * as MI from '@mui/icons-material'
 import { ClassItem } from '../../constants/index'
 import useCreateToken from '../../hooks/useCreateToken'
+import useAlertCallback from '../../hooks/useAlertCallback'
 
 const Container = styled.div`
   display: flex;
@@ -171,6 +172,9 @@ export default function Create() {
   const [stats, setStats] = useState({ health: 1, speed: 1, skill: 1, morale: 1 })
   const { t } = useTranslation()
   const onCreateToken = useCreateToken()
+  const alertMessage = useAlertCallback()
+  const [txPending, setTxPending] = useState(false)
+
   return (
     <Container>
       <Axie1 src={axie1} alt="axie1" />
@@ -285,8 +289,19 @@ export default function Create() {
           <Typography fontSize="20px">{stats.morale}</Typography>
         </Box>
       </Box>
-      <StyledButton variant="primary" onClick={() => onCreateToken(urlImage, price, classify, stats)}>
-        {t('Create')}
+      <StyledButton
+        variant="primary"
+        onClick={() => {
+          if (!urlImage || !price || !classify) {
+            alertMessage(t('Error'), t('Please fill input'), 'error')
+            return
+          }
+          setTxPending(true)
+          onCreateToken(urlImage, price, classify, stats)
+          setTxPending(false)
+        }}
+      >
+        {txPending ? t('Creating') : t('Create')}
       </StyledButton>
     </Container>
   )

@@ -1,7 +1,7 @@
 import { Modal as MuiModal } from '@mui/material'
 import Card from './Card'
 
-export default function Modal({ open, onClose }) {
+export default function Modal({ open, onClose, itemModal }) {
   return (
     <MuiModal
       open={open}
@@ -23,6 +23,7 @@ export default function Modal({ open, onClose }) {
         showBuyOrSellButton
         history={[]}
         onClose={onClose}
+        item={itemModal}
       />
     </MuiModal>
   )

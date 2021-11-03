@@ -2,9 +2,13 @@ import { Box, InputLabel, MenuItem } from '@mui/material'
 import styled from '@emotion/styled'
 import { CssTextField, StyledFormControl, StyledSelect } from '../Create'
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Card from '../../components/Card'
 import Modal from '../../components/Modal'
+import useListNftInListing from '../../hooks/useListNftInListing'
+import { OWNER_NFT_MARKET } from '../../constants'
+import { useSelector } from 'react-redux'
+import useListNftMyBought from '../../hooks/useListNftMyBought'
 
 const Container = styled(Box)`
   width: calc(100% - 16px);
@@ -37,11 +41,46 @@ const RowGrid = styled(Box)`
 
 export default function Marketplace() {
   const { t } = useTranslation()
+  const chainId = useSelector((state) => state.provider.chainId)
+  const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('Lowest price')
   const [filterByOrderType, setFilterByOrderType] = useState('All')
   const [filterByClassify, setFilterByClassify] = useState('All')
+  const [listData, setListData] = useState([])
+  const account = useSelector((state) => state.provider.account)
 
   const [openModal, setOpenModal] = useState(false)
+  const [itemModal, setItemModal] = useState({})
+
+  const listNftIsListing = useListNftInListing()
+
+  const listNftIsMyBought = useListNftMyBought()
+
+  useEffect(() => {
+    
+  })
+
+  useEffect(() => {
+    let result
+    switch (filterByOrderType) {
+      case 'All':
+        result = listNftIsListing
+        break
+      case 'Buy from Admin':
+        result = listNftIsListing.filter((item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase())
+        break;
+      case 'My Selling':
+        result = listNftIsListing.filter((item) => item.seller.toLowerCase() === account.toLowerCase())
+        break;
+      case 'My NFT':
+        result = listNftIsListing.filter((item) => item.seller.toLowerCase() !== OWNER_NFT_MARKET[chainId].toLowerCase())
+        break;
+      default:
+        result = listNftIsListing
+        break;
+    }
+    setListData(result)
+  }, [account, chainId, filterByOrderType, listNftIsListing])
 
   const onCloseModal = () => {
     setOpenModal(false)
@@ -49,9 +88,16 @@ export default function Marketplace() {
 
   return (
     <Container>
-      <Modal open={openModal} onClose={onCloseModal} />
+      <Modal open={openModal} onClose={onCloseModal} itemModal={itemModal} />
       <RowControl display="flex" justifyContent="center">
-        <CssTextField width="15vw" label={t('Search...')} variant="outlined" size="small" />
+        <CssTextField
+          width="15vw"
+          label={t('Search...')}
+          variant="outlined"
+          size="small"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
         <StyledFormControl width="160px" value={sortBy}>
           <InputLabel style={{ color: '#decbbd' }} size="small">
             {t('Sort by')}
@@ -82,9 +128,9 @@ export default function Marketplace() {
             onChange={(e) => setFilterByOrderType(e.target.value)}
           >
             <MenuItem value="All">{t('All')}</MenuItem>
-            <MenuItem value="Buy new">{t('Buy new')}</MenuItem>
-            <MenuItem value="Exchange">{t('Exchange')}</MenuItem>
-            <MenuItem value="My Vnext">{t('My Vnext')}</MenuItem>
+            <MenuItem value="Buy from Admin">{t('Buy from Admin')}</MenuItem>
+            <MenuItem value="My Selling">{t('My Selling')}</MenuItem>
+            <MenuItem value="My NFT">{t('My NFT')}</MenuItem>
           </StyledSelect>
         </StyledFormControl>
         <StyledFormControl width="120px" value={filterByClassify}>
@@ -108,8 +154,19 @@ export default function Marketplace() {
       </RowControl>
       <RowGridWrapper>
         <RowGrid>
-          <Card onClick={() => setOpenModal(true)} onClose={onCloseModal} />
-          <Card onClick={() => setOpenModal(true)} onClose={onCloseModal} />
+          {listData.map((item, index) => {
+            return (
+              <Card
+                onClick={() => {
+                  setItemModal(item)
+                  setOpenModal(true)
+                }}
+                onClose={onCloseModal}
+                item={item}
+                key={index}
+              />
+            )
+          })}
         </RowGrid>
       </RowGridWrapper>
     </Container>

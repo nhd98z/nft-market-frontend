@@ -5,7 +5,6 @@ import { fetchDataWithAccount, fetchDataWithChainId } from '../states/providerSl
 
 const useProvider = () => {
   const dispatch = useDispatch()
-  const [provider, setProvider] = useState()
 
   useEffect(() => {
     const accountChangeHandler = (accounts) => {
@@ -27,7 +26,7 @@ const useProvider = () => {
           window.ethereum.on && window.ethereum.on('chainChanged', networkChangeHandler)
           // use MetaMask's provider
           const currentProvider = new ethers.providers.Web3Provider(window.ethereum)
-          setProvider(currentProvider)
+          window.providerEth = currentProvider
           // set provider
           const currentSigner = await currentProvider.getSigner()
           // set chainID
@@ -49,8 +48,6 @@ const useProvider = () => {
       window.ethereum.on && window.ethereum.removeListener('chainChanged', networkChangeHandler)
     }
   }, [dispatch])
-
-  return provider
 }
 
 export default useProvider

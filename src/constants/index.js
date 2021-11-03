@@ -29,6 +29,19 @@ export const SECOND_PER_BLOCK = {
   [ChainId.RINKEBY]: 14,
 }
 
+export const OWNER_NFT = {
+  [ChainId.MAINNET]: undefined,
+  [ChainId.ROPSTEN]: undefined,
+  [ChainId.RINKEBY]: '0x090030D40A193a5966014c2D0B014F21459cb33e',
+}
+
+export const OWNER_NFT_MARKET = {
+  [ChainId.MAINNET]: undefined,
+  [ChainId.ROPSTEN]: undefined,
+  [ChainId.RINKEBY]: '0x090030D40A193a5966014c2D0B014F21459cb33e',
+}
+
+
 export const ClassItem = {
   BEAST: 1,
   PLANT: 2,
