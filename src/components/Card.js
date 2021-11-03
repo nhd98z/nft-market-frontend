@@ -55,6 +55,17 @@ export default forwardRef(function Card(props, ref) {
               </Typography>
             </Box>
           </Box>
+          {showBuyOrSellButton && (
+            <Box>
+              <MI.ControlPoint
+                cursor="pointer"
+                fontSize="large"
+                onClick={() => {
+                  alert(t('Up level successfully.'))
+                }}
+              />
+            </Box>
+          )}
           <Box>
             <Box display="flex">
               <Box display="flex" alignItems="flex-start">
