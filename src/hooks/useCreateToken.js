@@ -16,6 +16,7 @@ const useCreateToken = () => {
   const nftMarketContract = useNtfMarketContract()
   const chainId = useSelector((state) => state.provider.chainId)
   const block = useBlock()
+  console.log('block', block)
   const alertMessage = useAlertCallback()
   const { t } = useTranslation()
 
@@ -51,7 +52,7 @@ const useCreateToken = () => {
             price.toString(),
             blockNumberAfter2Weeks,
             {
-              value: (ethers.utils.parseUnits(LISTING_PRICE.toString(), 'ether')).toString(),
+              value: ethers.utils.parseUnits(LISTING_PRICE.toString(), 'ether').toString(),
             },
           )
           await listingTokenTx.wait()

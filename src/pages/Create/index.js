@@ -207,9 +207,9 @@ export default function Create() {
         <StyledFormControl width="9vw" value={classify}>
           <InputLabel style={{ color: '#decbbd' }}>{t('Class')}</InputLabel>
           <StyledSelect displayEmpty value={classify} label={t('Class')} onChange={(e) => setClassify(e.target.value)}>
-            {Object.keys(ClassItem).map((item) => {
+            {Object.keys(ClassItem).map((item, index) => {
               return (
-                <MenuItem value={ClassItem[item]} style={{ textTransform: 'capitalize' }}>
+                <MenuItem value={ClassItem[item]} style={{ textTransform: 'capitalize' }} key={index}>
                   {t(item.toLocaleLowerCase())}
                 </MenuItem>
               )

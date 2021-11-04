@@ -6,9 +6,10 @@ import { useEffect, useState } from 'react'
 import Card from '../../components/Card'
 import Modal from '../../components/Modal'
 import useListNftInListing from '../../hooks/useListNftInListing'
-import { OWNER_NFT_MARKET } from '../../constants'
+import { ClassItem, OWNER_NFT_MARKET } from '../../constants'
 import { useSelector } from 'react-redux'
 import useListNftMyBought from '../../hooks/useListNftMyBought'
+import _ from 'lodash'
 
 const Container = styled(Box)`
   width: calc(100% - 16px);
@@ -53,12 +54,7 @@ export default function Marketplace() {
   const [itemModal, setItemModal] = useState({})
 
   const listNftIsListing = useListNftInListing()
-
   const listNftIsMyBought = useListNftMyBought()
-
-  useEffect(() => {
-    
-  })
 
   useEffect(() => {
     let result
@@ -67,20 +63,50 @@ export default function Marketplace() {
         result = listNftIsListing
         break
       case 'Buy from Admin':
-        result = listNftIsListing.filter((item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase())
-        break;
+        result = _.filter(
+          listNftIsListing,
+          (item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase(),
+        )
+        break
       case 'My Selling':
-        result = listNftIsListing.filter((item) => item.seller.toLowerCase() === account.toLowerCase())
-        break;
+        result = _.filter(listNftIsListing, (item) => item.seller.toLowerCase() === account.toLowerCase())
+        break
       case 'My NFT':
-        result = listNftIsMyBought
-        break;
+        const itemIsSelling = _.map(listNftIsListing, (item) => {
+          if (item.seller.toLowerCase() === account.toLowerCase()) {
+            return item.tokenId
+          }
+        }).filter(i => i !== undefined)
+        result = _.filter(listNftIsMyBought, (item) => !itemIsSelling.includes(item.tokenId))
+        break
       default:
         result = listNftIsListing
-        break;
+        break
+    }
+    if (filterByClassify !== 'All') {
+      result = _.filter(listNftIsListing, (item) => item.class === filterByClassify)
+    }
+    if (search) {
+      result = _.filter(listNftIsListing, (item) => item.tokenId.toString() === search)
+    }
+    switch (sortBy) {
+      case 'Lowest price':
+        result = _.orderBy(result, ['price'], ['asc'])
+        break
+      case 'Highest price':
+        result = _.orderBy(result, ['price'], ['desc'])
+        break
+      case 'Lowest ID':
+        result = _.orderBy(result, ['id'], ['asc'])
+        break
+      case 'Highest ID':
+        result = _.orderBy(result, ['id'], ['desc'])
+        break
+      default:
+        break
     }
     setListData(result)
-  }, [account, chainId, filterByOrderType, listNftIsListing, listNftIsMyBought])
+  }, [account, chainId, filterByClassify, filterByOrderType, listNftIsListing, listNftIsMyBought, search, sortBy])
 
   const onCloseModal = () => {
     setOpenModal(false)
@@ -113,7 +139,6 @@ export default function Marketplace() {
             <MenuItem value="Highest price">{t('Highest price')}</MenuItem>
             <MenuItem value="Lowest ID">{t('Lowest ID')}</MenuItem>
             <MenuItem value="Highest ID">{t('Highest ID')}</MenuItem>
-            <MenuItem value="Name">{t('Name')}</MenuItem>
           </StyledSelect>
         </StyledFormControl>
         <StyledFormControl width="120px" value={filterByOrderType}>
@@ -145,10 +170,13 @@ export default function Marketplace() {
             onChange={(e) => setFilterByClassify(e.target.value)}
           >
             <MenuItem value="All">{t('All')}</MenuItem>
-            <MenuItem value="Beast">{t('Beast')}</MenuItem>
-            <MenuItem value="Plant">{t('Plant')}</MenuItem>
-            <MenuItem value="Bug">{t('Bug')}</MenuItem>
-            <MenuItem value="Mech">{t('Mech')}</MenuItem>
+            {Object.keys(ClassItem).map((item, index) => {
+              return (
+                <MenuItem value={ClassItem[item]} style={{ textTransform: 'capitalize' }} key={index}>
+                  {t(item.toLocaleLowerCase())}
+                </MenuItem>
+              )
+            })}
           </StyledSelect>
         </StyledFormControl>
       </RowControl>

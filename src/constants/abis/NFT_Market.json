@@ -121,7 +121,7 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [{ "internalType": "address", "name": "_user", "type": "address" }],
     "name": "fetchItemsCreated",
     "outputs": [
       {
@@ -185,7 +185,7 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [{ "internalType": "address", "name": "_user", "type": "address" }],
     "name": "fetchMyNFTs",
     "outputs": [
       {

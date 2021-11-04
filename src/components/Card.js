@@ -6,8 +6,13 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
 import { ClassItem } from '../constants'
+import useAlertCallback from '../hooks/useAlertCallback'
+import useApproveAll from '../hooks/useApproveAll'
 import useBuyNft from '../hooks/useBuyNft'
+import useSellHistories from '../hooks/useSellHistories'
+import useSellNft from '../hooks/useSellNft'
 import { CssTextField } from '../pages/Create'
+import { connectWallet } from '../utils'
 
 const StyledCard = styled(Box)`
   height: 285px;
@@ -40,10 +45,14 @@ const StyledButton = styled(Button)`
 
 export default forwardRef(function Card(props, ref) {
   const { t } = useTranslation()
+  const alertMessage = useAlertCallback()
   const [sellPrice, setSellPrice] = useState('')
   const { imageWidth, showBuyOrSellButton, history, onClose, item } = props
-  const account = useSelector((state) => state.provider.account)
+  const account = useSelector((state) => state.provider.account) ?? ''
   const onBuy = useBuyNft()
+  const onSell = useSellNft()
+  const { isApprove, onApprove } = useApproveAll()
+  const histories = useSellHistories(item.tokenId)
 
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
@@ -57,7 +66,7 @@ export default forwardRef(function Card(props, ref) {
               <MI.Pets />
               <Typography marginLeft="4px" fontSize="14px" lineHeight="normal">
                 {Object.keys(ClassItem).map((i) => {
-                  if (ClassItem[i] == item.class) {
+                  if (ClassItem[i] === item.class) {
                     return t(i)
                   }
                 })}
@@ -117,13 +126,27 @@ export default forwardRef(function Card(props, ref) {
             </Typography>
           )}
         </Box>
-        {showBuyOrSellButton && !isMySell && (
+        {!account && showBuyOrSellButton && (
+          <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={connectWallet}>
+            {t('Connect Metamask')}
+          </StyledButton>
+        )}
+         {account && !isApprove && showBuyOrSellButton && isSell && (
+          <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={onApprove}>
+            {t('Approve NFT')}
+          </StyledButton>
+        )}
+        {account && showBuyOrSellButton && !isMySell && isApprove && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
             onClick={() => {
               onClose && onClose()
               if (isSell) {
+                if (!sellPrice) {
+                  alertMessage(t('Error'), t('Please fill input'), 'error')
+                }
+                onSell(item, sellPrice)
               } else {
                 onBuy(item)
               }
@@ -153,30 +176,25 @@ export default forwardRef(function Card(props, ref) {
             </Typography>
           </Box>
           <Box marginTop="8px" flex={1}>
-            <Box display="flex" justifyContent="space-between">
-              <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                0xD3fc...07d0
-              </Typography>
-              <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                0.082 ETH (8h ago)
-              </Typography>
-            </Box>
-            <Box display="flex" justifyContent="space-between">
-              <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                0xD3fc...07d0
-              </Typography>
-              <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                0.082 ETH (8h ago)
-              </Typography>
-            </Box>
-            <Box display="flex" justifyContent="space-between">
-              <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                0xD3fc...07d0
-              </Typography>
-              <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                0.082 ETH (8h ago)
-              </Typography>
-            </Box>
+          {histories.length ?
+            histories.map((item, index) => {
+              return (
+                <Box display="flex" justifyContent="space-between">
+                  <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
+                    {`${item.buyer.slice(0, 6)}...${item.buyer.slice(item.buyer.length - 4, item.buyer.length)}`}
+                  </Typography>
+                  <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
+                    {item.price} ETH ({item.time})
+                  </Typography>
+                </Box>
+              )
+            })
+            : ( <Box display="flex" justifyContent="space-between" textAlign="center">
+                  <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
+                    {t('No history')}
+                  </Typography>
+              </Box>)
+          }
           </Box>
         </Box>
       )}

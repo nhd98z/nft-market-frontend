@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import useBlock from './useBlock'
 
 const useBalance = () => {
   const [balance, setBalance] = useState('0')
   const provider = window.providerEth
   const account = useSelector((state) => state.provider.account)
+  const block = useBlock()
 
   useEffect(() => {
     ;(async () => {
@@ -18,7 +20,7 @@ const useBalance = () => {
         console.error('error', error)
       }
     })()
-  }, [account, provider])
+  }, [account, block, provider])
 
   return balance
 }
