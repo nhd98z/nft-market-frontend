@@ -12,11 +12,15 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "axios": "^0.24.0",
     "bignumber.js": "^9.0.1",
     "ethers": "^5.5.1",
     "i18next": "^21.3.3",
     "i18next-xhr-backend": "^3.2.2",
     "inter-ui": "^3.19.3",
+    "ipfs-http-client": "^53.0.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
     "node-sass": "^5.0.0",
     "prettier": "^2.4.1",
     "react": "^17.0.2",
@@ -34,7 +38,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "format:check": "prettier --check '**/*.{js,jsx,ts,tsx}'",
+    "format:write": "prettier --write '**/*.{js,jsx,ts,tsx}'"
   },
   "eslintConfig": {
     "extends": [

@@ -2,12 +2,13 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router'
 import { Redirect, Route, Switch } from 'react-router-dom'
-import Web3Modal from 'web3modal'
 import useProvider from '../hooks/useProvider'
 import './App.scss'
 import Create from './Create'
 import Marketplace from './Marketplace'
 import useLanguage from '../hooks/useLanguage'
+import useBalance from '../hooks/useBalance'
+import { connectWallet } from '../utils'
 
 function App() {
   useProvider()
@@ -17,11 +18,7 @@ function App() {
   const activeIndex = pathname === '/marketplace' ? 0 : pathname === '/create' ? 1 : undefined
   const { t } = useTranslation()
   const [language, toggleLanguage] = useLanguage()
-
-  const connectWallet = async () => {
-    const web3Modal = new Web3Modal()
-    await web3Modal.connect()
-  }
+  useBalance()
 
   return (
     <div className="app">

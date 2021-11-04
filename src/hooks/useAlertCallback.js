@@ -13,9 +13,9 @@ const Toast = Swal.mixin({
 })
 
 export default function useAlertCallback() {
-  return (title, desc) => {
+  return (title, desc, type) => {
     Toast.fire({
-      icon: 'success',
+      icon: type,
       title: title,
       text: desc,
     }).then()
