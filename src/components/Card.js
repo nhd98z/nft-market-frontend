@@ -6,8 +6,12 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
 import { ClassItem } from '../constants'
+import useAlertCallback from '../hooks/useAlertCallback'
+import useApproveAll from '../hooks/useApproveAll'
 import useBuyNft from '../hooks/useBuyNft'
+import useSellNft from '../hooks/useSellNft'
 import { CssTextField } from '../pages/Create'
+import { connectWallet } from '../utils'
 
 const StyledCard = styled(Box)`
   height: 285px;
@@ -40,10 +44,13 @@ const StyledButton = styled(Button)`
 
 export default forwardRef(function Card(props, ref) {
   const { t } = useTranslation()
+  const alertMessage = useAlertCallback()
   const [sellPrice, setSellPrice] = useState('')
   const { imageWidth, showBuyOrSellButton, history, onClose, item } = props
-  const account = useSelector((state) => state.provider.account)
+  const account = useSelector((state) => state.provider.account) ?? ''
   const onBuy = useBuyNft()
+  const onSell = useSellNft()
+  const { isApprove, onApprove } = useApproveAll()
 
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
@@ -57,7 +64,7 @@ export default forwardRef(function Card(props, ref) {
               <MI.Pets />
               <Typography marginLeft="4px" fontSize="14px" lineHeight="normal">
                 {Object.keys(ClassItem).map((i) => {
-                  if (ClassItem[i] == item.class) {
+                  if (ClassItem[i] === item.class) {
                     return t(i)
                   }
                 })}
@@ -117,13 +124,22 @@ export default forwardRef(function Card(props, ref) {
             </Typography>
           )}
         </Box>
-        {showBuyOrSellButton && !isMySell && (
+        {!account && showBuyOrSellButton && (
+          <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={connectWallet}>
+            {t('Connect Metamask')}
+          </StyledButton>
+        )}
+        {account && showBuyOrSellButton && !isMySell && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
             onClick={() => {
               onClose && onClose()
               if (isSell) {
+                if (!sellPrice) {
+                  alertMessage(t('Error'), t('Please fill input'), 'error')
+                }
+                onSell(item, sellPrice)
               } else {
                 onBuy(item)
               }

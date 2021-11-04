@@ -7,20 +7,25 @@ const useNtfContract = () => {
   const [nftContract, setNftContract] = useState()
   const provider = window.providerEth
   const chainId = useSelector((state) => state.provider.chainId)
+  const account = useSelector((state) => state.provider.account)
 
   useEffect(() => {
     ;(async () => {
       try {
-        if (provider && chainId &&  NFT_ADDRESS[chainId] && ABI['ntf'] ) {
+        if (provider && chainId && NFT_ADDRESS[chainId] && ABI['ntf']) {
           const currentSigner = await provider.getSigner()
           const contract = new ethers.Contract(NFT_ADDRESS[chainId], ABI['ntf'], provider)
-          setNftContract(contract.connect(currentSigner))
+          if (account) {
+            setNftContract(contract.connect(currentSigner))
+          } else {
+            setNftContract(contract)
+          }
         }
       } catch (error) {
         console.error('error', error)
       }
     })()
-  }, [chainId, provider])
+  }, [account, chainId, provider])
 
   return nftContract
 }

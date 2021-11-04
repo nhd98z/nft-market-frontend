@@ -2,51 +2,52 @@ import { useEffect, useState } from 'react'
 import useNtfContract from './useNtfContract'
 import useNtfMarketContract from './useNtfMarketContract'
 import axios from 'axios'
-import { ethers } from 'ethers'
+import _ from 'lodash'
+import { useSelector } from 'react-redux'
 
 const useListNftMyBought = () => {
   const nftContract = useNtfContract()
   const nftMarketContract = useNtfMarketContract()
   const [list, setList] = useState([])
+  const account = useSelector((state) => state.provider.account)
 
   useEffect(() => {
     ;(async () => {
-      if (nftContract && nftMarketContract) {
+      if (nftContract && nftMarketContract && account) {
         // get list tokens
-        const listMyBoughtItems = await nftMarketContract.fetchMyNFTs()
-        const listMySellItems = await nftMarketContract.fetchItemsCreated()
-        const myItem = listMyBoughtItems.filter((buyItem) => {
-          console.log('buyItem', buyItem)
+        const listMyBoughtItems = await nftMarketContract.fetchMyNFTs(account)
+        const listMySellItems = await nftMarketContract.fetchItemsCreated(account)
+        //
+        const sortedListMyBoughtItems = _.orderBy(listMyBoughtItems, ['itemId'], ['desc'])
+        const uniqueListMyBoughtItems = _.uniqBy(sortedListMyBoughtItems, 'tokenId')
+        //
+        const sortedListMySellItems = _.orderBy(listMySellItems, ['itemId'], ['desc'])
+        const uniqueListMySellItems = _.uniqBy(sortedListMySellItems, 'tokenId')
+
+        const myItem = uniqueListMyBoughtItems.filter((buyItem) => {
           const buyTokenId = buyItem.tokenId.toNumber()
           const buyId = buyItem.itemId.toNumber()
-          const sellItems = listMySellItems.filter((sellItem) => {
+          const sellItems = uniqueListMySellItems.filter((sellItem) => {
             const sellTokenId = sellItem.tokenId.toNumber()
             const sellId = sellItem.itemId.toNumber()
-            if(sellTokenId === buyTokenId && sellId > buyId){
+            if (sellTokenId === buyTokenId && sellId > buyId) {
               return true
             }
             return false
           })
-          if(!sellItems.length){
+          if (!sellItems.length) {
             return true
           }
           return false
         })
-        console.log('listMyBoughtItems', listMyBoughtItems)
-        console.log('listMySellItems', listMySellItems)
-        console.log('myItem', myItem)
         const data = await Promise.all(
           myItem.map(async (i) => {
             const tokenUri = await nftContract.tokenURI(i.tokenId)
             const tokenState = await nftContract._tokenDetails(i.tokenId)
             const meta = await axios.get(tokenUri)
-            let price = ethers.utils.formatUnits(i.minPrice.toString(), 'ether')
             let item = {
               id: i.itemId.toString(),
-              price,
               tokenId: i.tokenId.toNumber(),
-              seller: i.seller,
-              buyer: i.buyer,
               image: meta.data.urlImage,
               class: meta.data.classId,
               level: tokenState.level.toString(),
@@ -56,13 +57,13 @@ const useListNftMyBought = () => {
               speed: tokenState.speed.toString(),
             }
             return item
-          })
+          }),
         )
         setList(data)
         return true
       }
     })()
-  }, [nftContract, nftMarketContract])
+  }, [account, nftContract, nftMarketContract])
   return list
 }
 

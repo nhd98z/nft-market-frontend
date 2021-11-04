@@ -51,7 +51,7 @@ const useCreateToken = () => {
             price.toString(),
             blockNumberAfter2Weeks,
             {
-              value: (ethers.utils.parseUnits(LISTING_PRICE.toString(), 'ether')).toString(),
+              value: ethers.utils.parseUnits(LISTING_PRICE.toString(), 'ether').toString(),
             },
           )
           await listingTokenTx.wait()

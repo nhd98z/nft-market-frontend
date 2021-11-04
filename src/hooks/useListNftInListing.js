@@ -3,17 +3,21 @@ import useNtfContract from './useNtfContract'
 import useNtfMarketContract from './useNtfMarketContract'
 import axios from 'axios'
 import { ethers } from 'ethers'
+import { fetchMetadata } from '../states/tokenDataSlice'
+import { useDispatch } from 'react-redux'
 
 const useListNftInListing = () => {
   const nftContract = useNtfContract()
   const nftMarketContract = useNtfMarketContract()
   const [list, setList] = useState([])
+  const dispatch = useDispatch()
 
   useEffect(() => {
     ;(async () => {
       if (nftContract && nftMarketContract) {
         // get list tokens
         const listItems = await nftMarketContract.fetchMarketItems()
+        // dispatch(fetchMetadata(nftContract, listItems[0]))
         const data = await Promise.all(
           listItems.map(async (i) => {
             const tokenUri = await nftContract.tokenURI(i.tokenId)
@@ -35,13 +39,13 @@ const useListNftInListing = () => {
               speed: tokenState.speed.toString(),
             }
             return item
-          })
+          }),
         )
         setList(data)
         return true
       }
     })()
-  }, [nftContract, nftMarketContract])
+  }, [dispatch, nftContract, nftMarketContract])
   return list
 }
 

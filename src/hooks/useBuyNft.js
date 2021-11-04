@@ -11,7 +11,6 @@ const useBuyNft = () => {
   const { t } = useTranslation()
   return useCallback(
     async (item) => {
-      console.log('item', item)
       try {
         if (nftMarketContract) {
           const price = ethers.utils.parseUnits(item.price, 'ether')
@@ -19,7 +18,7 @@ const useBuyNft = () => {
             value: price.toString(),
           })
           saveTxPending(buyNftTx.hash)
-          alertMessage(t('Success'), t('Buy NFT token success'), 'success')
+          alertMessage(t('Success'), t('Submit transaction buy NFT success'), 'success')
         }
       } catch (e) {
         console.error(e)
