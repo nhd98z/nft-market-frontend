@@ -1,14 +1,11 @@
-import { ethers } from 'ethers'
-import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { LISTING_PRICE, NFT_ADDRESS, NFT_MARKET_ADDRESS, SECONDS_TIME_MAX_SELL, SECOND_PER_BLOCK } from '../constants'
-import useNtfContract from './useNtfContract'
-import useNtfMarketContract from './useNtfMarketContract'
-import useBlock from './useBlock'
-import useAlertCallback from './useAlertCallback'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
+import { NFT_MARKET_ADDRESS } from '../constants'
 import { saveTxPending } from '../utils'
+import useAlertCallback from './useAlertCallback'
+import useBlock from './useBlock'
+import useNtfContract from './useNtfContract'
 
 
 const useApproveAll = () => {
@@ -18,6 +15,7 @@ const useApproveAll = () => {
   const alertMessage = useAlertCallback()
   const { t } = useTranslation()
   const [isApprove, setIsApprove] = useState(false)
+  const block = useBlock()
 
   useEffect(() => {
     (async () => {
@@ -26,7 +24,7 @@ const useApproveAll = () => {
         setIsApprove(isApproved)
       }
     })()
-  }, [account, alertMessage, chainId, nftContract, t])
+  }, [account, alertMessage, chainId, nftContract, t, block])
 
 
   const handleApproveAll = useCallback(

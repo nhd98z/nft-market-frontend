@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react'
-import useNtfContract from './useNtfContract'
-import useNtfMarketContract from './useNtfMarketContract'
 import axios from 'axios'
 import { ethers } from 'ethers'
-import { fetchMetadata } from '../states/tokenDataSlice'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import useBlock from './useBlock'
+import useNtfContract from './useNtfContract'
+import useNtfMarketContract from './useNtfMarketContract'
 
 const useListNftInListing = () => {
   const nftContract = useNtfContract()
   const nftMarketContract = useNtfMarketContract()
   const [list, setList] = useState([])
   const dispatch = useDispatch()
+  const block = useBlock()
 
   useEffect(() => {
     ;(async () => {
@@ -45,7 +46,7 @@ const useListNftInListing = () => {
         return true
       }
     })()
-  }, [dispatch, nftContract, nftMarketContract])
+  }, [dispatch, nftContract, nftMarketContract, block])
   return list
 }
 

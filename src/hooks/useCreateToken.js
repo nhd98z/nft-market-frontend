@@ -16,6 +16,7 @@ const useCreateToken = () => {
   const nftMarketContract = useNtfMarketContract()
   const chainId = useSelector((state) => state.provider.chainId)
   const block = useBlock()
+  console.log('block', block)
   const alertMessage = useAlertCallback()
   const { t } = useTranslation()
 

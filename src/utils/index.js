@@ -6,6 +6,10 @@ export const saveTxPending = (tx) => {
   localStorage.setItem('tx_pending', JSON.stringify(txsStorage))
 }
 
+export const getTxPending = () => {
+  return JSON.parse(localStorage.getItem('tx_pending') ?? '[]') ?? []
+}
+
 export const removeTxSuccess = (tx) => {
   const txsStorage = JSON.parse(localStorage.getItem('tx_pending') ?? '[]') ?? []
   const index = txsStorage.indexOf(tx)

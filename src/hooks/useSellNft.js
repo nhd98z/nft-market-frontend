@@ -23,7 +23,7 @@ const useSellNft = () => {
           const blockNumberAfter2Weeks = block + Math.floor(SECONDS_TIME_MAX_SELL / SECOND_PER_BLOCK[chainId])
           const listingTokenTx = await nftMarketContract.createMarketItem(
             NFT_ADDRESS[chainId],
-            item.id,
+            item.tokenId,
             price.toString(),
             price.toString(),
             blockNumberAfter2Weeks,

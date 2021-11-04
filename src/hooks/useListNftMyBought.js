@@ -4,12 +4,14 @@ import useNtfMarketContract from './useNtfMarketContract'
 import axios from 'axios'
 import _ from 'lodash'
 import { useSelector } from 'react-redux'
+import useBlock from './useBlock'
 
 const useListNftMyBought = () => {
   const nftContract = useNtfContract()
   const nftMarketContract = useNtfMarketContract()
   const [list, setList] = useState([])
   const account = useSelector((state) => state.provider.account)
+  const block = useBlock()
 
   useEffect(() => {
     ;(async () => {
@@ -63,7 +65,7 @@ const useListNftMyBought = () => {
         return true
       }
     })()
-  }, [account, nftContract, nftMarketContract])
+  }, [account, nftContract, nftMarketContract, block])
   return list
 }
 

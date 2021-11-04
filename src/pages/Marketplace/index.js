@@ -63,39 +63,47 @@ export default function Marketplace() {
         result = listNftIsListing
         break
       case 'Buy from Admin':
-        result = _.filter(listNftIsListing, (item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase())
-        break;
+        result = _.filter(
+          listNftIsListing,
+          (item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase(),
+        )
+        break
       case 'My Selling':
         result = _.filter(listNftIsListing, (item) => item.seller.toLowerCase() === account.toLowerCase())
-        break;
+        break
       case 'My NFT':
-        result = listNftIsMyBought
-        break;
+        const itemIsSelling = _.map(listNftIsListing, (item) => {
+          if (item.seller.toLowerCase() === account.toLowerCase()) {
+            return item.tokenId
+          }
+        }).filter(i => i !== undefined)
+        result = _.filter(listNftIsMyBought, (item) => !itemIsSelling.includes(item.tokenId))
+        break
       default:
         result = listNftIsListing
         break
     }
-    if(filterByClassify !== 'All') {
+    if (filterByClassify !== 'All') {
       result = _.filter(listNftIsListing, (item) => item.class === filterByClassify)
     }
-    if(search) {
+    if (search) {
       result = _.filter(listNftIsListing, (item) => item.tokenId.toString() === search)
     }
     switch (sortBy) {
       case 'Lowest price':
         result = _.orderBy(result, ['price'], ['asc'])
-        break;
+        break
       case 'Highest price':
         result = _.orderBy(result, ['price'], ['desc'])
-        break;
+        break
       case 'Lowest ID':
         result = _.orderBy(result, ['id'], ['asc'])
-        break;
+        break
       case 'Highest ID':
         result = _.orderBy(result, ['id'], ['desc'])
-        break;
+        break
       default:
-        break;
+        break
     }
     setListData(result)
   }, [account, chainId, filterByClassify, filterByOrderType, listNftIsListing, listNftIsMyBought, search, sortBy])
