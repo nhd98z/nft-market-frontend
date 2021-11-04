@@ -84,10 +84,10 @@ export default function Marketplace() {
         break
     }
     if (filterByClassify !== 'All') {
-      result = _.filter(listNftIsListing, (item) => item.class === filterByClassify)
+      result = _.filter(result, (item) => item.class === filterByClassify)
     }
     if (search) {
-      result = _.filter(listNftIsListing, (item) => item.tokenId.toString() === search)
+      result = _.filter(result, (item) => item.tokenId.toString() === search)
     }
     switch (sortBy) {
       case 'Lowest price':
