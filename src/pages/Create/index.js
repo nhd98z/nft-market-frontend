@@ -5,6 +5,9 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import axie1 from '../../assets/axie-1.png'
 import * as MI from '@mui/icons-material'
+import { ClassItem } from '../../constants/index'
+import useCreateToken from '../../hooks/useCreateToken'
+import useAlertCallback from '../../hooks/useAlertCallback'
 
 const Container = styled.div`
   display: flex;
@@ -163,17 +166,20 @@ const Axie1 = styled(Axie)`
 `
 
 export default function Create() {
-  const [name, setName] = useState('')
+  const [urlImage, setUrlImage] = useState('')
   const [price, setPrice] = useState('')
   const [classify, setClassify] = useState('') // BEAST PLANT BUG MECH
   const [stats, setStats] = useState({ health: 1, speed: 1, skill: 1, morale: 1 })
   const { t } = useTranslation()
+  const onCreateToken = useCreateToken()
+  const alertMessage = useAlertCallback()
+  const [txPending, setTxPending] = useState(false)
 
   return (
     <Container>
       <Axie1 src={axie1} alt="axie1" />
       <Heading>
-        {t("Let's create a new Axie in a few easy steps")
+        {t("Let's create a new Vnext in a few easy steps")
           .split(' ')
           .map((word, index) => (
             <span key={index} style={{ '--i': index }}>
@@ -183,10 +189,10 @@ export default function Create() {
       </Heading>
       <CssTextField
         width="20vw"
-        label={t('Name')}
+        label={t('Url Image')}
         variant="outlined"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        value={urlImage}
+        onChange={(e) => setUrlImage(e.target.value)}
       />
       <Box width="20vw" display="flex" justifyContent="space-between">
         <CssTextField
@@ -201,10 +207,13 @@ export default function Create() {
         <StyledFormControl width="9vw" value={classify}>
           <InputLabel style={{ color: '#decbbd' }}>{t('Class')}</InputLabel>
           <StyledSelect displayEmpty value={classify} label={t('Class')} onChange={(e) => setClassify(e.target.value)}>
-            <MenuItem value="Beast">{t('Beast')}</MenuItem>
-            <MenuItem value="Plant">{t('Plant')}</MenuItem>
-            <MenuItem value="Bug">{t('Bug')}</MenuItem>
-            <MenuItem value="Mech">{t('Mech')}</MenuItem>
+            {Object.keys(ClassItem).map((item) => {
+              return (
+                <MenuItem value={ClassItem[item]} style={{ textTransform: 'capitalize' }}>
+                  {t(item.toLocaleLowerCase())}
+                </MenuItem>
+              )
+            })}
           </StyledSelect>
         </StyledFormControl>
       </Box>
@@ -280,7 +289,20 @@ export default function Create() {
           <Typography fontSize="20px">{stats.morale}</Typography>
         </Box>
       </Box>
-      <StyledButton variant="primary">{t('Create')}</StyledButton>
+      <StyledButton
+        variant="primary"
+        onClick={() => {
+          if (!urlImage || !price || !classify) {
+            alertMessage(t('Error'), t('Please fill input'), 'error')
+            return
+          }
+          setTxPending(true)
+          onCreateToken(urlImage, price, classify, stats)
+          setTxPending(false)
+        }}
+      >
+        {txPending ? t('Creating') : t('Create')}
+      </StyledButton>
     </Container>
   )
 }

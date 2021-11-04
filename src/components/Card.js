@@ -1,11 +1,13 @@
-import { Box, Button, Typography } from '@mui/material'
-import * as MI from '@mui/icons-material'
-import axie1 from '../assets/axie-1.png'
-import { useTranslation } from 'react-i18next'
 import styled from '@emotion/styled'
-import Swal from 'sweetalert2'
-import { CssTextField } from '../pages/Create'
+import * as MI from '@mui/icons-material'
+import { Box, Button, Typography } from '@mui/material'
 import { forwardRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
+import Swal from 'sweetalert2'
+import { ClassItem } from '../constants'
+import useBuyNft from '../hooks/useBuyNft'
+import { CssTextField } from '../pages/Create'
 
 const StyledCard = styled(Box)`
   height: 285px;
@@ -38,46 +40,42 @@ const StyledButton = styled(Button)`
 
 export default forwardRef(function Card(props, ref) {
   const { t } = useTranslation()
-  const { imageWidth, showBuyOrSellButton, history, onClose } = props
-  const isSell = Math.random() < 0.5
   const [sellPrice, setSellPrice] = useState('')
+  const { imageWidth, showBuyOrSellButton, history, onClose, item } = props
+  const account = useSelector((state) => state.provider.account)
+  const onBuy = useBuyNft()
 
+  const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
+  const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
   return (
     <StyledCard {...props}>
       <Box padding="16px" width="100%">
         <Box display="flex" justifyContent="space-between">
           <Box>
-            <div>#12345678</div>
+            <div># {item.tokenId}</div>
             <Box display="flex" alignItems="flex-end" marginTop="4px">
               <MI.Pets />
               <Typography marginLeft="4px" fontSize="14px" lineHeight="normal">
-                {t('Beast')}
+                {Object.keys(ClassItem).map((i) => {
+                  if (ClassItem[i] == item.class) {
+                    return t(i)
+                  }
+                })}
               </Typography>
             </Box>
           </Box>
-          {showBuyOrSellButton && (
-            <Box>
-              <MI.ControlPoint
-                cursor="pointer"
-                fontSize="large"
-                onClick={() => {
-                  alert(t('Up level successfully.'))
-                }}
-              />
-            </Box>
-          )}
           <Box>
             <Box display="flex">
               <Box display="flex" alignItems="flex-start">
                 <MI.Favorite fontSize="small" style={{ fill: '#3ac279' }} />
                 <Typography fontSize="20px" lineHeight="normal">
-                  15
+                  {item.heath}
                 </Typography>
               </Box>
               <Box display="flex" alignItems="flex-start">
                 <MI.FlashOn fontSize="small" style={{ fill: '#f7ac0a' }} />
                 <Typography fontSize="20px" lineHeight="normal">
-                  16
+                  {item.speed}
                 </Typography>
               </Box>
             </Box>
@@ -85,20 +83,20 @@ export default forwardRef(function Card(props, ref) {
               <Box display="flex" alignItems="flex-start">
                 <MI.StarRate fontSize="small" style={{ fill: '#9166e0' }} />
                 <Typography fontSize="20px" lineHeight="normal">
-                  17
+                  {item.skill}
                 </Typography>
               </Box>
               <Box display="flex" alignItems="flex-start">
                 <MI.LocalFireDepartment fontSize="small" style={{ fill: '#c23a3a' }} />
                 <Typography fontSize="20px" lineHeight="normal">
-                  18
+                  {item.morale}
                 </Typography>
               </Box>
             </Box>
           </Box>
         </Box>
         <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1">
-          <img src={axie1} alt="axie1" style={{ width: imageWidth ?? '160px', height: 'fit-content' }} />
+          <img src={item.image} alt="axie1" style={{ width: imageWidth ?? '160px', height: 'fit-content' }} />
           {showBuyOrSellButton && isSell ? (
             <CssTextField
               width="50%"
@@ -115,35 +113,20 @@ export default forwardRef(function Card(props, ref) {
             />
           ) : (
             <Typography fontSize="20px" fontWeight={400}>
-              1.28 ETH
+              {item.price} ETH
             </Typography>
           )}
         </Box>
-        {showBuyOrSellButton && (
+        {showBuyOrSellButton && !isMySell && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
             onClick={() => {
               onClose && onClose()
-              Swal.fire({
-                position: 'bottom',
-                icon: 'success',
-                title: t('Transaction submitted.'),
-                showConfirmButton: false,
-                timer: 1500,
-                toast: true,
-              }).then(() => {
-                setTimeout(() => {
-                  Swal.fire({
-                    position: 'bottom',
-                    icon: 'success',
-                    title: t('Bought successfully.'),
-                    showConfirmButton: false,
-                    timer: 1500,
-                    toast: true,
-                  }).then()
-                }, 250)
-              })
+              if (isSell) {
+              } else {
+                onBuy(item)
+              }
             }}
           >
             {isSell ? t('Sell') : t('Buy')}

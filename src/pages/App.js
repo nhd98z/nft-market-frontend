@@ -8,6 +8,7 @@ import './App.scss'
 import Create from './Create'
 import Marketplace from './Marketplace'
 import useLanguage from '../hooks/useLanguage'
+import useBalance from '../hooks/useBalance'
 
 function App() {
   useProvider()
@@ -17,6 +18,7 @@ function App() {
   const activeIndex = pathname === '/marketplace' ? 0 : pathname === '/create' ? 1 : undefined
   const { t } = useTranslation()
   const [language, toggleLanguage] = useLanguage()
+  useBalance()
 
   const connectWallet = async () => {
     const web3Modal = new Web3Modal()
