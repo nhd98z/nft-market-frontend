@@ -69,14 +69,14 @@ export default function Marketplace() {
         )
         break
       case 'My Selling':
-        result = _.filter(listNftIsListing, (item) => item.seller.toLowerCase() === account.toLowerCase())
+        result = _.filter(listNftIsListing, (item) => account && item.seller.toLowerCase() === account.toLowerCase())
         break
       case 'My NFT':
         const itemIsSelling = _.map(listNftIsListing, (item) => {
-          if (item.seller.toLowerCase() === account.toLowerCase()) {
+          if (account && item.seller.toLowerCase() === account.toLowerCase()) {
             return item.tokenId
           }
-        }).filter(i => i !== undefined)
+        }).filter((i) => i !== undefined)
         result = _.filter(listNftIsMyBought, (item) => !itemIsSelling.includes(item.tokenId))
         break
       default:
