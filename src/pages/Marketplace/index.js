@@ -73,14 +73,14 @@ export default function Marketplace() {
         result = listNftIsListing.filter((item) => item.seller.toLowerCase() === account.toLowerCase())
         break;
       case 'My NFT':
-        result = listNftIsListing.filter((item) => item.seller.toLowerCase() !== OWNER_NFT_MARKET[chainId].toLowerCase())
+        result = listNftIsMyBought
         break;
       default:
         result = listNftIsListing
         break;
     }
     setListData(result)
-  }, [account, chainId, filterByOrderType, listNftIsListing])
+  }, [account, chainId, filterByOrderType, listNftIsListing, listNftIsMyBought])
 
   const onCloseModal = () => {
     setOpenModal(false)
