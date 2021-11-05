@@ -136,13 +136,13 @@ export default forwardRef(function Card(props, ref) {
             {t('Approve NFT')}
           </StyledButton>
         )}
-        {account && showBuyOrSellButton && !isMySell && isApprove && (
+        {account && showBuyOrSellButton && !isMySell && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
             onClick={() => {
               onClose && onClose()
-              if (isSell) {
+              if (isSell && isApprove) {
                 if (!sellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
@@ -152,7 +152,7 @@ export default forwardRef(function Card(props, ref) {
               }
             }}
           >
-            {isSell ? t('Sell') : t('Buy')}
+            {isSell && isApprove ? t('Sell') : t('Buy')}
           </StyledButton>
         )}
       </Box>
