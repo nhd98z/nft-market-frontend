@@ -45,7 +45,7 @@ export default function Marketplace() {
   const chainId = useSelector((state) => state.provider.chainId)
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('Lowest price')
-  const [filterByOrderType, setFilterByOrderType] = useState('All')
+  const [filterByOrderType, setFilterByOrderType] = useState('My NFT')
   const [filterByClassify, setFilterByClassify] = useState('All')
   const [listData, setListData] = useState([])
   const account = useSelector((state) => state.provider.account)
@@ -59,15 +59,6 @@ export default function Marketplace() {
   useEffect(() => {
     let result
     switch (filterByOrderType) {
-      case 'All':
-        result = listNftIsListing
-        break
-      case 'Buy from Admin':
-        result = _.filter(
-          listNftIsListing,
-          (item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase(),
-        )
-        break
       case 'My Selling':
         result = _.filter(listNftIsListing, (item) => account && item.seller.toLowerCase() === account.toLowerCase())
         break
@@ -149,13 +140,11 @@ export default function Marketplace() {
             displayEmpty
             label={t('Type')}
             size="small"
-            defaultValue="All"
+            defaultValue="My NFT"
             onChange={(e) => setFilterByOrderType(e.target.value)}
           >
-            <MenuItem value="All">{t('All')}</MenuItem>
-            <MenuItem value="Buy from Admin">{t('Buy from Admin')}</MenuItem>
-            <MenuItem value="My Selling">{t('My Selling')}</MenuItem>
             <MenuItem value="My NFT">{t('My NFT')}</MenuItem>
+            <MenuItem value="My Selling">{t('My Selling')}</MenuItem>
           </StyledSelect>
         </StyledFormControl>
         <StyledFormControl width="120px" value={filterByClassify}>
@@ -181,7 +170,7 @@ export default function Marketplace() {
         </StyledFormControl>
       </RowControl>
       <RowGridWrapper style={{overflow:'visible'}}>
-        <RowGrid >
+        <RowGrid>
           {listData.map((item, index) => {
             return (
               <Card
