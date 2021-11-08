@@ -12,7 +12,10 @@ import useSellHistories from '../hooks/useSellHistories'
 import useSellNft from '../hooks/useSellNft'
 import { CssTextField } from '../pages/Create'
 import { connectWallet } from '../utils'
-
+import {ReactComponent as Beast} from '../assets/beast.svg'
+import {ReactComponent as Plant} from '../assets/plant.svg'
+import {ReactComponent as Mech} from '../assets/mech.svg'
+import {ReactComponent as Bug} from '../assets/bug.svg'
 const StyledCard = styled(Box)`
   height: 320px;
   width: 225px;
@@ -57,7 +60,7 @@ export default forwardRef(function Card(props, ref) {
   const { t } = useTranslation()
   const alertMessage = useAlertCallback()
   const [sellPrice, setSellPrice] = useState('')
-  const { imageWidth, showBuyOrSellButton, history, onClose, item } = props
+  const { showBuyOrSellButton, history, onClose, item } = props
   const account = useSelector((state) => state.provider.account) ?? ''
   const onBuy = useBuyNft()
   const onSell = useSellNft()
@@ -67,7 +70,7 @@ export default forwardRef(function Card(props, ref) {
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
 
-  const icon = item.class === 1 ? <MI.Pets /> : item.class === 2 ? <MI.Nature /> : item.class === 3 ? <MI.BugReport /> : item.class === 4 ? <MI.Build /> : null
+  const icon = item.class === 1 ? <Beast/> : item.class === 2 ? <Plant/> : item.class === 3 ? <Bug /> : item.class === 4 ? <Mech /> : null
 
   return (
     <StyledCard {...props}>

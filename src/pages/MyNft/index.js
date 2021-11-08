@@ -6,9 +6,10 @@ import { useEffect, useState } from 'react'
 import Card from '../../components/Card'
 import Modal from '../../components/Modal'
 import useListNftInListing from '../../hooks/useListNftInListing'
-import { ClassItem, OWNER_NFT_MARKET } from '../../constants'
+import { ClassItem } from '../../constants'
 import { useSelector } from 'react-redux'
 import useListNftMyBought from '../../hooks/useListNftMyBought'
+import ReactPaginate from 'react-paginate';
 import _ from 'lodash'
 
 const Container = styled(Box)`
@@ -39,15 +40,20 @@ const RowGrid = styled(Box)`
   place-items: center;
   row-gap: 45px;
 `
-
+const PagingContainer = styled(Box)`
+    margin-top:80px;
+    display: flex;
+    justify-content: center;
+  `
 export default function Marketplace() {
+  const itemsPerPage = 8
   const { t } = useTranslation()
   const chainId = useSelector((state) => state.provider.chainId)
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('Lowest price')
   const [filterByOrderType, setFilterByOrderType] = useState('My NFT')
   const [filterByClassify, setFilterByClassify] = useState('All')
-  const [listData, setListData] = useState([])
+  const [listDataLength, setListDataLength] = useState([])
   const account = useSelector((state) => state.provider.account)
 
   const [openModal, setOpenModal] = useState(false)
@@ -55,7 +61,9 @@ export default function Marketplace() {
 
   const listNftIsListing = useListNftInListing()
   const listNftIsMyBought = useListNftMyBought()
-
+  const [pageCount, setPageCount] = useState(0);
+  const [itemOffset, setItemOffset] = useState(0);
+  const [currentItems, setCurrentItems] = useState([]);
   useEffect(() => {
     let result
     switch (filterByOrderType) {
@@ -96,13 +104,26 @@ export default function Marketplace() {
       default:
         break
     }
-    setListData(result)
-  }, [account, chainId, filterByClassify, filterByOrderType, listNftIsListing, listNftIsMyBought, search, sortBy])
+    setListDataLength(result.length)
+    const endOffset = itemOffset + itemsPerPage;
+    setPageCount(Math.ceil(result.length / itemsPerPage));
+    setCurrentItems(result.slice(itemOffset, endOffset))
+  }, [account, chainId, filterByClassify, filterByOrderType, listNftIsListing, listNftIsMyBought, search, sortBy,itemOffset])
 
   const onCloseModal = () => {
     setOpenModal(false)
   }
-
+  // Invoke when user click to request another page.
+  const handlePageClick = (event) => {
+    const newOffset = (event.selected * itemsPerPage) % listDataLength;
+    console.log(
+      `User requested page number ${event.selected}, which is offset ${newOffset}`
+    );
+    console.log(
+      `length ${listDataLength},`
+    );
+    setItemOffset(newOffset);
+  };
   return (
     <Container>
       <Modal open={openModal} onClose={onCloseModal} itemModal={itemModal} />
@@ -169,9 +190,9 @@ export default function Marketplace() {
           </StyledSelect>
         </StyledFormControl>
       </RowControl>
-      <RowGridWrapper style={{overflow:'visible'}}>
+      <RowGridWrapper style={{ overflow: 'visible' }}>
         <RowGrid>
-          {listData.map((item, index) => {
+          {currentItems.map((item, index) => {
             return (
               <Card
                 onClick={() => {
@@ -186,6 +207,28 @@ export default function Marketplace() {
           })}
         </RowGrid>
       </RowGridWrapper>
+      <PagingContainer style={{ color: 'pink' }}>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="next >"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={5}
+          pageCount={pageCount}
+          previousLabel="< previous"
+          renderOnZeroPageCount={null}
+          pageClassName="page-item"
+          pageLinkClassName="page-link"
+          previousClassName="page-item"
+          previousLinkClassName="page-link"
+          nextClassName="page-item"
+          nextLinkClassName="page-link"
+          breakLabel="..."
+          breakClassName="page-item"
+          breakLinkClassName="page-link"
+          containerClassName="pagination"
+          activeClassName="active"
+        />
+      </PagingContainer>
     </Container>
   )
 }

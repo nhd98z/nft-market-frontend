@@ -31,7 +31,6 @@ const RowGridWrapper = styled(Box)`
   justify-content: center;
   overflow: auto;
   flex: 1;
-  margin-bottom: 80px
 `
 
 const RowGrid = styled(Box)`
@@ -42,6 +41,7 @@ const RowGrid = styled(Box)`
   row-gap: 45px;
 `
 const PagingContainer = styled(Box)`
+    margin-top:80px;
     display: flex;
     justify-content: center;
   `
@@ -59,11 +59,12 @@ export default function Marketplace() {
 
   const [openModal, setOpenModal] = useState(false)
   const [itemModal, setItemModal] = useState({})
-  const [currentItems, setCurrentItems] = useState([]);
+  
   const listNftIsListing = useListNftInListing()
   const listNftIsMyBought = useListNftMyBought()
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
+  const [currentItems, setCurrentItems] = useState([]);
   useEffect(() => {
     let result
     switch (filterByOrderType) {
@@ -104,7 +105,6 @@ export default function Marketplace() {
     }
     setListDataLength(result.length)
     const endOffset = itemOffset + itemsPerPage;
-    console.log(`Loading items from ${itemOffset} to ${endOffset}`);
     setPageCount(Math.ceil(result.length / itemsPerPage));
     setCurrentItems(result.slice(itemOffset, endOffset))
   }, [account, chainId, filterByClassify, filterByOrderType, listNftIsListing, listNftIsMyBought, search, sortBy, itemOffset])
