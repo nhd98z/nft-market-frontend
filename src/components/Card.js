@@ -4,7 +4,6 @@ import { Box, Button, Typography } from '@mui/material'
 import { forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import Swal from 'sweetalert2'
 import { ClassItem } from '../constants'
 import useAlertCallback from '../hooks/useAlertCallback'
 import useApproveAll from '../hooks/useApproveAll'
@@ -69,6 +68,7 @@ export default forwardRef(function Card(props, ref) {
                   if (ClassItem[i] === item.class) {
                     return t(i)
                   }
+                  return ''
                 })}
               </Typography>
             </Box>

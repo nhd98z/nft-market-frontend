@@ -3,8 +3,9 @@ import useNtfContract from './useNtfContract'
 import useNtfMarketContract from './useNtfMarketContract'
 import axios from 'axios'
 import _ from 'lodash'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import useBlock from './useBlock'
+import { fetchMetadata } from '../states/tokenDataSlice'
 
 const useListNftMyBought = () => {
   const nftContract = useNtfContract()
@@ -12,6 +13,8 @@ const useListNftMyBought = () => {
   const [list, setList] = useState([])
   const account = useSelector((state) => state.provider.account)
   const block = useBlock()
+  const dispatch = useDispatch()
+  const metaData = useSelector((state) => state.tokenData.metaData)
 
   useEffect(() => {
     ;(async () => {
@@ -44,14 +47,20 @@ const useListNftMyBought = () => {
         })
         const data = await Promise.all(
           myItem.map(async (i) => {
-            const tokenUri = await nftContract.tokenURI(i.tokenId)
+            let meta
+            if (!metaData[i.tokenId]) {
+              const tokenUri = await nftContract.tokenURI(i.tokenId)
+              meta = (await axios.get(tokenUri)).data
+              dispatch(fetchMetadata({ meta: meta, id: i.tokenId }))
+            }else{
+              meta = metaData[i.tokenId]
+            }
             const tokenState = await nftContract._tokenDetails(i.tokenId)
-            const meta = await axios.get(tokenUri)
             let item = {
               id: i.itemId.toString(),
               tokenId: i.tokenId.toNumber(),
-              image: meta.data.urlImage,
-              class: meta.data.classId,
+              image: meta.urlImage,
+              class: meta.classId,
               level: tokenState.level.toString(),
               heath: tokenState.heath.toString(),
               morale: tokenState.morale.toString(),
@@ -65,7 +74,8 @@ const useListNftMyBought = () => {
         return true
       }
     })()
-  }, [account, nftContract, nftMarketContract, block])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, nftContract, nftMarketContract, block, dispatch])
   return list
 }
 
