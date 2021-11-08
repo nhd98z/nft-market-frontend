@@ -4,8 +4,6 @@ import { Box, Button, Typography } from '@mui/material'
 import { forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import Swal from 'sweetalert2'
-import eth from '../assets/axie-1.png'
 import { ClassItem } from '../constants'
 import useAlertCallback from '../hooks/useAlertCallback'
 import useApproveAll from '../hooks/useApproveAll'
@@ -16,7 +14,7 @@ import { CssTextField } from '../pages/Create'
 import { connectWallet } from '../utils'
 
 const StyledCard = styled(Box)`
-  height: 296px;
+  height: 320px;
   width: 225px;
   background: #2C394B;
   color: #ffffff;
@@ -31,7 +29,14 @@ const StyledCard = styled(Box)`
   ${({ showBuyOrSellButton }) => (showBuyOrSellButton ? `` : `:hover { background: #334756; transform: translateY(-8px);
     transition: 0.4s ease-out; }`)}
 `
-
+const StyledImage = styled(Box)`
+    
+    height: 200px;
+    width: 225px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain, cover;
+`
 const StyledButton = styled(Button)`
   width: 100%;
   background: #FF4C29;
@@ -112,9 +117,12 @@ export default forwardRef(function Card(props, ref) {
             </Box>
           </Box>
         </Box>
-        <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1">
-
-          <img src={item.image} alt="axie1" style={{ height: imageWidth ?? '160px', width: 'fit-content', margin: '8px' }} />
+        <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1"
+        >
+          <StyledImage style={{
+            backgroundImage: `url("${item.image}")`
+          }}></StyledImage>
+          {/* <img src={item.image} alt="axie1" style={{ height: imageWidth ?? '160px', width: 'fit-content', margin: '8px' }} /> */}
           {showBuyOrSellButton && isSell ? (
             <CssTextField
               width="50%"
