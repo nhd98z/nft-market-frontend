@@ -1,11 +1,10 @@
+import { ethers } from 'ethers'
+import moment from 'moment'
 import { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import useBlock from './useBlock'
 import useNtfContract from './useNtfContract'
 import useNtfMarketContract from './useNtfMarketContract'
-import axios from 'axios'
-import { ethers } from 'ethers'
-import { useDispatch } from 'react-redux'
-import moment from 'moment'
-import useBlock from './useBlock'
 
 const useSellHistories = (tokenId) => {
   const nftContract = useNtfContract()
