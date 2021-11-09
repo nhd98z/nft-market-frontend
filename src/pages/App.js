@@ -6,6 +6,7 @@ import useProvider from '../hooks/useProvider'
 import './App.scss'
 import Create from './Create'
 import Marketplace from './Marketplace'
+import MyNft from './MyNft'
 import useLanguage from '../hooks/useLanguage'
 import useBalance from '../hooks/useBalance'
 import { connectWallet } from '../utils'
@@ -15,7 +16,7 @@ function App() {
   const account = useSelector((state) => state.provider.account)
   const { pathname } = useLocation()
   const history = useHistory()
-  const activeIndex = pathname === '/marketplace' ? 0 : pathname === '/create' ? 1 : undefined
+  const activeIndex = pathname === '/marketplace' ? 0 : pathname === '/create' ? 2 : pathname === '/mynft' ? 1 : undefined
   const { t } = useTranslation()
   const [language, toggleLanguage] = useLanguage()
   useBalance()
@@ -28,6 +29,9 @@ function App() {
           <ul>
             <li tabIndex="0" className={activeIndex === 0 ? 'active' : ''} onClick={() => history.push('/marketplace')}>
               {t('Marketplace')}
+            </li>
+            <li tabIndex="0" className={activeIndex === 1 ? 'active' : ''} onClick={() => history.push('/mynft')}>
+              {t('My NFT')}
             </li>
             <li tabIndex="0" className={activeIndex === 2 ? 'active' : ''} onClick={() => history.push('/create')}>
               {t('Create')}
@@ -52,6 +56,7 @@ function App() {
       <div className="app-body">
         <Switch>
           <Route exact strict path="/marketplace" component={Marketplace} />
+          <Route exact strict path="/mynft" component={MyNft} />
           <Route exact strict path="/create" component={Create} />
           <Route component={() => <Redirect to="/marketplace" />} />
         </Switch>

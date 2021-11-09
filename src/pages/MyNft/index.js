@@ -6,12 +6,14 @@ import { useEffect, useState } from 'react'
 import Card from '../../components/Card'
 import Modal from '../../components/Modal'
 import useListNftInListing from '../../hooks/useListNftInListing'
-import { ClassItem, OWNER_NFT_MARKET } from '../../constants'
+import { ClassItem } from '../../constants'
 import { useSelector } from 'react-redux'
 import useListNftMyBought from '../../hooks/useListNftMyBought'
-import _ from 'lodash'
 import ReactPaginate from 'react-paginate';
 import Pagination from '@mui/material/Pagination';
+
+import _ from 'lodash'
+
 const Container = styled(Box)`
   width: calc(100% - 16px);
 `
@@ -45,24 +47,20 @@ const PagingContainer = styled(Box)`
     display: flex;
     justify-content: center;
   `
-  const PaginationCaption = styled(Box)`
-    color: 'white'
-  `
-
 export default function Marketplace() {
   const itemsPerPage = 8
   const { t } = useTranslation()
   const chainId = useSelector((state) => state.provider.chainId)
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('Lowest price')
-  const [filterByOrderType, setFilterByOrderType] = useState('All')
+  const [filterByOrderType, setFilterByOrderType] = useState('My NFT')
   const [filterByClassify, setFilterByClassify] = useState('All')
   const [listDataLength, setListDataLength] = useState([])
   const account = useSelector((state) => state.provider.account)
 
   const [openModal, setOpenModal] = useState(false)
   const [itemModal, setItemModal] = useState({})
-  
+
   const listNftIsListing = useListNftInListing()
   const listNftIsMyBought = useListNftMyBought()
   const [pageCount, setPageCount] = useState(0);
@@ -71,14 +69,16 @@ export default function Marketplace() {
   useEffect(() => {
     let result
     switch (filterByOrderType) {
-      case 'All':
-        result = listNftIsListing
+      case 'My Selling':
+        result = _.filter(listNftIsListing, (item) => account && item.seller.toLowerCase() === account.toLowerCase())
         break
-      case 'Buy from Admin':
-        result = _.filter(
-          listNftIsListing,
-          (item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase(),
-        )
+      case 'My NFT':
+        const itemIsSelling = _.map(listNftIsListing, (item) => {
+          if (account && item.seller.toLowerCase() === account.toLowerCase()) {
+            return item.tokenId
+          }
+        }).filter((i) => i !== undefined)
+        result = _.filter(listNftIsMyBought, (item) => !itemIsSelling.includes(item.tokenId))
         break
       default:
         result = listNftIsListing
@@ -110,7 +110,7 @@ export default function Marketplace() {
     const endOffset = itemOffset + itemsPerPage;
     setPageCount(Math.ceil(result.length / itemsPerPage));
     setCurrentItems(result.slice(itemOffset, endOffset))
-  }, [account, chainId, filterByClassify, filterByOrderType, listNftIsListing, listNftIsMyBought, search, sortBy, itemOffset])
+  }, [account, chainId, filterByClassify, filterByOrderType, listNftIsListing, listNftIsMyBought, search, sortBy,itemOffset])
 
   const onCloseModal = () => {
     setOpenModal(false)
@@ -163,11 +163,11 @@ export default function Marketplace() {
             displayEmpty
             label={t('Type')}
             size="small"
-            defaultValue="All"
+            defaultValue="My NFT"
             onChange={(e) => setFilterByOrderType(e.target.value)}
           >
-            <MenuItem value="All">{t('All')}</MenuItem>
-            <MenuItem value="Buy from Admin">{t('Buy from Admin')}</MenuItem>
+            <MenuItem value="My NFT">{t('My NFT')}</MenuItem>
+            <MenuItem value="My Selling">{t('My Selling')}</MenuItem>
           </StyledSelect>
         </StyledFormControl>
         <StyledFormControl width="120px" value={filterByClassify}>
@@ -193,7 +193,7 @@ export default function Marketplace() {
         </StyledFormControl>
       </RowControl>
       <RowGridWrapper style={{ overflow: 'visible' }}>
-        <RowGrid >
+        <RowGrid>
           {currentItems.map((item, index) => {
             return (
               <Card
@@ -208,9 +208,8 @@ export default function Marketplace() {
             )
           })}
         </RowGrid>
-
       </RowGridWrapper>
-      <PagingContainer >
+      <PagingContainer style={{ color: 'pink' }}>
       <Pagination count={10} showFirstButton showLastButton color="secondary" style={{display: 'none'}}/>
         <ReactPaginate
           breakLabel="..."

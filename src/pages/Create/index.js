@@ -154,7 +154,7 @@ const Axie1 = styled(Axie)`
   left: 10vw;
   transform: scaleX(-1) rotate(15deg);
   animation-timing-function: ease-in-out;
-  animation: yee 1.75s;
+  animation: yee 1s;
   @keyframes yee {
     from {
       left: -100vw;
