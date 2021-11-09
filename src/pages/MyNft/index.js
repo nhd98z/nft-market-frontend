@@ -10,6 +10,8 @@ import { ClassItem } from '../../constants'
 import { useSelector } from 'react-redux'
 import useListNftMyBought from '../../hooks/useListNftMyBought'
 import ReactPaginate from 'react-paginate';
+import Pagination from '@mui/material/Pagination';
+
 import _ from 'lodash'
 
 const Container = styled(Box)`
@@ -208,6 +210,7 @@ export default function Marketplace() {
         </RowGrid>
       </RowGridWrapper>
       <PagingContainer style={{ color: 'pink' }}>
+      <Pagination count={10} showFirstButton showLastButton color="secondary" style={{display: 'none'}}/>
         <ReactPaginate
           breakLabel="..."
           nextLabel="next >"
@@ -216,17 +219,13 @@ export default function Marketplace() {
           pageCount={pageCount}
           previousLabel="< previous"
           renderOnZeroPageCount={null}
-          pageClassName="page-item"
-          pageLinkClassName="page-link"
-          previousClassName="page-item"
-          previousLinkClassName="page-link"
-          nextClassName="page-item"
-          nextLinkClassName="page-link"
+          pageClassName="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeMedium MuiPaginationItem-text MuiPaginationItem-circular MuiPaginationItem-textSecondary MuiPaginationItem-page css-19micn4-MuiButtonBase-root-MuiPaginationItem-root"
+          previousClassName="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeMedium MuiPaginationItem-text MuiPaginationItem-circular MuiPaginationItem-textSecondary MuiPaginationItem-page css-19micn4-MuiButtonBase-root-MuiPaginationItem-root"
+          nextClassName="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeMedium MuiPaginationItem-text MuiPaginationItem-circular MuiPaginationItem-textSecondary MuiPaginationItem-page css-19micn4-MuiButtonBase-root-MuiPaginationItem-root"
           breakLabel="..."
-          breakClassName="page-item"
-          breakLinkClassName="page-link"
-          containerClassName="pagination"
-          activeClassName="active"
+          breakClassName="css-1v2lvtn-MuiPaginationItem-root"
+          containerClassName="css-wjh20t-MuiPagination-ul"
+          activeClassName="Mui-selected"
         />
       </PagingContainer>
     </Container>
