@@ -17,7 +17,7 @@ const useBuyNft = () => {
           const buyNftTx = await nftMarketContract.buyDirectly(item.id, {
             value: price.toString(),
           })
-          saveTxPending(buyNftTx.hash)
+          saveTxPending(buyNftTx.hash, t('Buy NFT #{{id}} successfully.', {id: item.id}))
           alertMessage(t('Success'), t('Submit transaction buy NFT success'), 'success')
         }
       } catch (e) {

@@ -16,8 +16,8 @@ const useBlock = () => {
       const pendingTxs = getTxPending()
       txs
         .map((txB) => {
-          if (pendingTxs.includes(txB.hash)) {
-            alertMessage(t('Success'), t(`Transaction ${txB.hash}`), 'success')
+          if (pendingTxs.hasOwnProperty(txB.hash)) {
+            alertMessage(t('Success'), pendingTxs[txB.hash], 'success')
             removeTxSuccess(txB.hash)
             return txB.hash
           }
