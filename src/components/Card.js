@@ -16,6 +16,7 @@ import {ReactComponent as Beast} from '../assets/beast.svg'
 import {ReactComponent as Plant} from '../assets/plant.svg'
 import {ReactComponent as Mech} from '../assets/mech.svg'
 import {ReactComponent as Bug} from '../assets/bug.svg'
+import useLevelUp from '../hooks/useLevelUp'
 const StyledCard = styled(Box)`
   height: 320px;
   width: 225px;
@@ -64,13 +65,13 @@ export default forwardRef(function Card(props, ref) {
   const account = useSelector((state) => state.provider.account) ?? ''
   const onBuy = useBuyNft()
   const onSell = useSellNft()
+  const onLevelUp = useLevelUp()
   const { isApprove, onApprove } = useApproveAll()
   const histories = useSellHistories(item.tokenId)
-
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
-
   const icon = item.class === 1 ? <Beast/> : item.class === 2 ? <Plant/> : item.class === 3 ? <Bug /> : item.class === 4 ? <Mech /> : null
+  const isMyNft = (item.buyer === undefined) && (item.seller === undefined)
 
   return (
     <StyledCard {...props}>
@@ -90,6 +91,17 @@ export default forwardRef(function Card(props, ref) {
               </Typography>
             </Box>
           </Box>
+          {isMyNft && showBuyOrSellButton && (
+            <Box>
+              <MI.ControlPoint 
+                cursor="pointer"
+                fontSize="large"
+                onClick={() => {
+                  onLevelUp(item.tokenId)
+                }}
+              />
+            </Box>
+          )}
           <Box>
             <Box display="flex">
               <Box display="flex" alignItems="flex-start">
@@ -143,7 +155,7 @@ export default forwardRef(function Card(props, ref) {
             />
           ) : (
             <Typography fontSize="20px" fontWeight={400}>
-              {item.price} ETH
+              {item.price && item.price + ' ETH'}
             </Typography>
           )}
         </Box>
