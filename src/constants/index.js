@@ -53,3 +53,5 @@ export const SECONDS_TIME_MAX_SELL = 3600 * 24 * 7 * 2 // 2 weeks
 export const LEVEL_UP_FEE = 0.001 // Ether
 
 export const LISTING_PRICE = 0.0025 // Ether
+
+export const ITEMS_PER_PAGE = 8
