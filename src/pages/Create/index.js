@@ -296,6 +296,10 @@ export default function Create() {
             alertMessage(t('Error'), t('Please fill input'), 'error')
             return
           }
+          if (parseFloat(price) == 0) {
+            alertMessage(t('Error'), t('Price must greater than 0'), 'error')
+            return
+          }
           setTxPending(true)
           onCreateToken(urlImage, price, classify, stats)
           setTxPending(false)

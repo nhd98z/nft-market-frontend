@@ -205,6 +205,9 @@ export default forwardRef(function Card(props, ref) {
                 if (!sellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
+                if (sellPrice && parseFloat(sellPrice) == 0) {
+                  alertMessage(t('Error'), t('Sell price must greater than 0'), 'error')
+                }
                 onSell(item, sellPrice)
               } else {
                 onBuy(item)
