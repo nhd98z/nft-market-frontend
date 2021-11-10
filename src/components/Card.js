@@ -12,15 +12,16 @@ import useSellHistories from '../hooks/useSellHistories'
 import useSellNft from '../hooks/useSellNft'
 import { CssTextField } from '../pages/Create'
 import { connectWallet } from '../utils'
-import {ReactComponent as Beast} from '../assets/beast.svg'
-import {ReactComponent as Plant} from '../assets/plant.svg'
-import {ReactComponent as Mech} from '../assets/mech.svg'
-import {ReactComponent as Bug} from '../assets/bug.svg'
+import { ReactComponent as Beast } from '../assets/beast.svg'
+import { ReactComponent as Plant } from '../assets/plant.svg'
+import { ReactComponent as Mech } from '../assets/mech.svg'
+import { ReactComponent as Bug } from '../assets/bug.svg'
+import useCancelMarketItem from '../hooks/useCancelMarketItem'
 import useLevelUp from '../hooks/useLevelUp'
 const StyledCard = styled(Box)`
   height: 320px;
   width: 225px;
-  background: #2C394B;
+  background: #2c394b;
   color: #ffffff;
   border-radius: 12px;
   box-shadow: -2px 0px 24px #000;
@@ -30,22 +31,24 @@ const StyledCard = styled(Box)`
   flex-direction: column;
   overflow: hidden;
   transition: 0.4s ease-out;
-  ${({ showBuyOrSellButton }) => (showBuyOrSellButton ? `` : `:hover { background: #334756; transform: translateY(-8px);
-    transition: 0.4s ease-out; }`)}
+  ${({ showBuyOrSellButton }) =>
+    showBuyOrSellButton
+      ? ``
+      : `:hover { background: #334756; transform: translateY(-8px);
+    transition: 0.4s ease-out; }`}
 `
 const StyledImage = styled(Box)`
-    
-    height: 200px;
-    width: 225px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain, cover;
+  height: 200px;
+  width: 225px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain, cover;
 `
 const StyledButton = styled(Button)`
   width: 100%;
-  background: #FF4C29;
+  background: #ff4c29;
   transition: all 200ms ease-in-out;
-  box-shadow: rgba(0,0,0,0.9);
+  box-shadow: rgba(0, 0, 0, 0.9);
   border-radius: 12px;
   font-size: 16px;
   padding: 8px;
@@ -68,10 +71,21 @@ export default forwardRef(function Card(props, ref) {
   const onLevelUp = useLevelUp()
   const { isApprove, onApprove } = useApproveAll()
   const histories = useSellHistories(item.tokenId)
+  const onCancelMarketItem = useCancelMarketItem()
+
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
-  const icon = item.class === 1 ? <Beast/> : item.class === 2 ? <Plant/> : item.class === 3 ? <Bug /> : item.class === 4 ? <Mech /> : null
-  const isMyNft = (item.buyer === undefined) && (item.seller === undefined)
+  const isMyNft = item.buyer === undefined && item.seller === undefined
+  const icon =
+    item.class === 1 ? (
+      <Beast />
+    ) : item.class === 2 ? (
+      <Plant />
+    ) : item.class === 3 ? (
+      <Bug />
+    ) : item.class === 4 ? (
+      <Mech />
+    ) : null
 
   return (
     <StyledCard {...props}>
@@ -93,7 +107,7 @@ export default forwardRef(function Card(props, ref) {
           </Box>
           {isMyNft && showBuyOrSellButton && (
             <Box>
-              <MI.ControlPoint 
+              <MI.ControlPoint
                 cursor="pointer"
                 fontSize="large"
                 onClick={() => {
@@ -133,11 +147,12 @@ export default forwardRef(function Card(props, ref) {
             </Box>
           </Box>
         </Box>
-        <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1"
-        >
-          <StyledImage style={{
-            backgroundImage: `url("${item.image}")`
-          }}></StyledImage>
+        <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1">
+          <StyledImage
+            style={{
+              backgroundImage: `url("${item.image}")`,
+            }}
+          ></StyledImage>
           {/* <img src={item.image} alt="axie1" style={{ height: imageWidth ?? '160px', width: 'fit-content', margin: '8px' }} /> */}
           {showBuyOrSellButton && isSell ? (
             <CssTextField
@@ -167,6 +182,17 @@ export default forwardRef(function Card(props, ref) {
         {account && !isApprove && showBuyOrSellButton && isSell && (
           <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={onApprove}>
             {t('Approve NFT')}
+          </StyledButton>
+        )}
+        {account && showBuyOrSellButton && isMySell && (
+          <StyledButton
+            variant="contained"
+            style={{ margin: '8px 0' }}
+            onClick={() => {
+              onCancelMarketItem(item.id)
+            }}
+          >
+            {t('Cancel')}
           </StyledButton>
         )}
         {account && showBuyOrSellButton && !isMySell && (
@@ -209,7 +235,7 @@ export default forwardRef(function Card(props, ref) {
             </Typography>
           </Box>
           <Box marginTop="8px" flex={1}>
-            {histories.length ?
+            {histories.length ? (
               histories.map((item, index) => {
                 return (
                   <Box display="flex" justifyContent="space-between">
@@ -217,18 +243,18 @@ export default forwardRef(function Card(props, ref) {
                       {`${item.buyer.slice(0, 6)}...${item.buyer.slice(item.buyer.length - 4, item.buyer.length)}`}
                     </Typography>
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-
                       {item.price} ETH ({item.time})
                     </Typography>
                   </Box>
                 )
               })
-              : (<Box display="flex" justifyContent="space-between" textAlign="center">
+            ) : (
+              <Box display="flex" justifyContent="space-between" textAlign="center">
                 <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                   {t('No history')}
                 </Typography>
-              </Box>)
-            }
+              </Box>
+            )}
           </Box>
         </Box>
       )}
