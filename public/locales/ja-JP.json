@@ -1,4 +1,8 @@
 {
   "Marketplace": "ありがとうございます",
-  "Let's create a new Vnext in a few easy steps": "いくつかの簡単な手順で新しいVnextを作成しましょう"
+  "Let's create a new Vnext in a few easy steps": "いくつかの簡単な手順で新しいVnextを作成しましょう",
+  "Buy NFT #{{id}} successfully.": "Buy NFT #{{id}} successfully.",
+  "Sell NFT #{{id}} successfully.": "Sell NFT #{{id}} successfully.",
+  "Upgrade level #{{id}} successfully.": "Upgrade level #{{id}} successfully.",
+  "Cancel item #{{id}} successfully.": "Cancel item #{{id}} successfully."  
 }

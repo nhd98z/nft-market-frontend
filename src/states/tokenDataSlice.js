@@ -1,17 +1,14 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   metaData: {},
 }
 
-export const fetchMetadata = createAsyncThunk('tokenData/updateMetadata', async (nftContract, i, { dispatch }) => {
-  console.log('aaaaaaaaaaaaaaaa')
-  const tokenUri = await nftContract.tokenURI(i.tokenId)
-  const meta = await axios.get(tokenUri)
+export const fetchMetadata = createAsyncThunk('tokenData/updateMetadata', async (payload, { dispatch }) => {
+  const {id, meta} = payload 
   const data = {
-    id: i.tokenId,
-    meta: meta.data,
+    id: id.toNumber(),
+    meta: meta,
   }
   dispatch(updateMetadata(data))
 })
@@ -21,9 +18,8 @@ export const tokenDataSlice = createSlice({
   initialState,
   reducers: {
     updateMetadata(state, action) {
-      console.log('111', action.payload)
-      state.metaData = { ...state.metaData, ...action.payload }
-      console.log('state.metaData', state.metaData)
+      const {id, meta} = action.payload
+      state.metaData = { ...state.metaData, ...{[id]: meta} }
     },
   },
   extraReducers: (builder) => {

@@ -6,12 +6,12 @@ import { useEffect, useState } from 'react'
 import Card from '../../components/Card'
 import Modal from '../../components/Modal'
 import useListNftInListing from '../../hooks/useListNftInListing'
-import { ClassItem, OWNER_NFT_MARKET } from '../../constants'
+import { ClassItem, ITEMS_PER_PAGE, OWNER_NFT_MARKET } from '../../constants'
 import { useSelector } from 'react-redux'
 import useListNftMyBought from '../../hooks/useListNftMyBought'
 import _ from 'lodash'
-import ReactPaginate from 'react-paginate';
-import Pagination from '@mui/material/Pagination';
+import ReactPaginate from 'react-paginate'
+import Pagination from '@mui/material/Pagination'
 const Container = styled(Box)`
   width: calc(100% - 16px);
 `
@@ -41,12 +41,13 @@ const RowGrid = styled(Box)`
   row-gap: 45px;
 `
 const PagingContainer = styled(Box)`
-    margin-top:80px;
-    display: flex;
-    justify-content: center;
-  `
+  margin-top: 80px;
+  display: flex;
+  justify-content: center;
+`
+
 export default function Marketplace() {
-  const itemsPerPage = 8
+  const itemsPerPage = ITEMS_PER_PAGE
   const { t } = useTranslation()
   const chainId = useSelector((state) => state.provider.chainId)
   const [search, setSearch] = useState('')
@@ -58,12 +59,12 @@ export default function Marketplace() {
 
   const [openModal, setOpenModal] = useState(false)
   const [itemModal, setItemModal] = useState({})
-  
+
   const listNftIsListing = useListNftInListing()
   const listNftIsMyBought = useListNftMyBought()
-  const [pageCount, setPageCount] = useState(0);
-  const [itemOffset, setItemOffset] = useState(0);
-  const [currentItems, setCurrentItems] = useState([]);
+  const [pageCount, setPageCount] = useState(0)
+  const [itemOffset, setItemOffset] = useState(0)
+  const [currentItems, setCurrentItems] = useState([])
   useEffect(() => {
     let result
     switch (filterByOrderType) {
@@ -103,25 +104,32 @@ export default function Marketplace() {
         break
     }
     setListDataLength(result.length)
-    const endOffset = itemOffset + itemsPerPage;
-    setPageCount(Math.ceil(result.length / itemsPerPage));
+    const endOffset = itemOffset + itemsPerPage
+    setPageCount(Math.ceil(result.length / itemsPerPage))
     setCurrentItems(result.slice(itemOffset, endOffset))
-  }, [account, chainId, filterByClassify, filterByOrderType, listNftIsListing, listNftIsMyBought, search, sortBy, itemOffset])
+  }, [
+    account,
+    chainId,
+    filterByClassify,
+    filterByOrderType,
+    listNftIsListing,
+    listNftIsMyBought,
+    search,
+    sortBy,
+    itemOffset,
+    itemsPerPage,
+  ])
 
   const onCloseModal = () => {
     setOpenModal(false)
   }
   // Invoke when user click to request another page.
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % listDataLength;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`
-    );
-    console.log(
-      `length ${listDataLength},`
-    );
-    setItemOffset(newOffset);
-  };
+    const newOffset = (event.selected * itemsPerPage) % listDataLength
+    console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`)
+    console.log(`length ${listDataLength},`)
+    setItemOffset(newOffset)
+  }
   return (
     <Container>
       <Modal open={openModal} onClose={onCloseModal} itemModal={itemModal} />
@@ -189,7 +197,7 @@ export default function Marketplace() {
         </StyledFormControl>
       </RowControl>
       <RowGridWrapper style={{ overflow: 'visible' }}>
-        <RowGrid >
+        <RowGrid>
           {currentItems.map((item, index) => {
             return (
               <Card
@@ -204,10 +212,9 @@ export default function Marketplace() {
             )
           })}
         </RowGrid>
-
       </RowGridWrapper>
-      <PagingContainer >
-      <Pagination count={10} showFirstButton showLastButton color="secondary" style={{display: 'none'}}/>
+      <PagingContainer>
+        <Pagination count={10} showFirstButton showLastButton color="secondary" style={{ display: 'none' }} />
         <ReactPaginate
           breakLabel="..."
           nextLabel=">"

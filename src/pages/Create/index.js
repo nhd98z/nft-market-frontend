@@ -307,6 +307,14 @@ export default function Create() {
             alertMessage(t('Error'), t('Please fill input'), 'error')
             return
           }
+          if (parseFloat(minPrice) === 0) {
+            alertMessage(t('Error'), t('Min price must greater than 0'), 'error')
+            return
+          }       
+          if (parseFloat(maxPrice) === 0) {
+            alertMessage(t('Error'), t('Max price must greater than 0'), 'error')
+            return
+          }
           setTxPending(true)
           onCreateToken(urlImage, minPrice, maxPrice, classify, stats)
           setTxPending(false)

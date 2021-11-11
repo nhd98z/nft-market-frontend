@@ -32,7 +32,7 @@ const useSellNft = () => {
               value: ethers.utils.parseUnits(LISTING_PRICE.toString(), 'ether').toString(),
             },
           )
-          saveTxPending(listingTokenTx.hash)
+          saveTxPending(listingTokenTx.hash, t('Sell NFT #{{id}} successfully.', {id: item.tokenId}))
           alertMessage(t('Success'), t('Submit transaction sell NFT success'), 'success')
         }
       } catch (e) {

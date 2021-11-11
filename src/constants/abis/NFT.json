@@ -55,36 +55,8 @@
       { "indexed": false, "internalType": "uint256", "name": "skill", "type": "uint256" },
       { "indexed": false, "internalType": "uint256", "name": "morale", "type": "uint256" }
     ],
-    "name": "UpdateStatus",
+    "name": "UpgrapdeLevel",
     "type": "event"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "Idtoken_to_Owner",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "_NFTId", "type": "uint256" }],
-    "name": "NewStatus",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "_tokenDetails",
-    "outputs": [
-      { "internalType": "uint8", "name": "class", "type": "uint8" },
-      { "internalType": "uint256", "name": "level", "type": "uint256" },
-      { "internalType": "uint256", "name": "heath", "type": "uint256" },
-      { "internalType": "uint256", "name": "speed", "type": "uint256" },
-      { "internalType": "uint256", "name": "skill", "type": "uint256" },
-      { "internalType": "uint256", "name": "morale", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [
@@ -219,6 +191,20 @@
     "type": "function"
   },
   {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "tokenDetail",
+    "outputs": [
+      { "internalType": "uint8", "name": "class", "type": "uint8" },
+      { "internalType": "uint256", "name": "level", "type": "uint256" },
+      { "internalType": "uint256", "name": "heath", "type": "uint256" },
+      { "internalType": "uint256", "name": "speed", "type": "uint256" },
+      { "internalType": "uint256", "name": "skill", "type": "uint256" },
+      { "internalType": "uint256", "name": "morale", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "address", "name": "owner", "type": "address" },
       { "internalType": "uint256", "name": "index", "type": "uint256" }
@@ -258,6 +244,13 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "_NFTId", "type": "uint256" }],
+    "name": "upgradeLevel",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   }
 ]
