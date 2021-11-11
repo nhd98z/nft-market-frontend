@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import * as MI from '@mui/icons-material'
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button, Typography, Switch } from '@mui/material'
 import { forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
@@ -8,8 +8,11 @@ import { ClassItem } from '../constants'
 import useAlertCallback from '../hooks/useAlertCallback'
 import useApproveAll from '../hooks/useApproveAll'
 import useBuyNft from '../hooks/useBuyNft'
+import useMakeOffer from '../hooks/useMakeOffer'
 import useSellHistories from '../hooks/useSellHistories'
+import useListOffer from '../hooks/useListOffer'
 import useSellNft from '../hooks/useSellNft'
+import OfferDiaglog from './OfferDialog'
 import { CssTextField } from '../pages/Create'
 import { connectWallet } from '../utils'
 import { ReactComponent as Beast } from '../assets/beast.svg'
@@ -61,21 +64,35 @@ const StyledButton = styled(Button)`
 `
 
 export default forwardRef(function Card(props, ref) {
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (value) => {
+    setOpen(false);
+  };
   const { t } = useTranslation()
   const alertMessage = useAlertCallback()
-  const [sellPrice, setSellPrice] = useState('')
+  const [minSellPrice, setMinSellPrice] = useState('')
+  const [maxSellPrice, setMaxSellPrice] = useState('')
+  const [offerPrice, setOfferPrice] = useState('')
+  const [isBuyDirectly, setIsBuyDirectly] = useState(true)
   const { showBuyOrSellButton, history, onClose, item } = props
   const account = useSelector((state) => state.provider.account) ?? ''
   const onBuy = useBuyNft()
+  const onOffer = useMakeOffer()
   const onSell = useSellNft()
   const onLevelUp = useLevelUp()
   const { isApprove, onApprove } = useApproveAll()
   const histories = useSellHistories(item.tokenId)
   const onCancelMarketItem = useCancelMarketItem()
-
+  const offers = useListOffer(item.id)
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
   const isMyNft = item.buyer === undefined && item.seller === undefined
+  const isOwner = item.buyer.toLowerCase() === account.toLowerCase()
   const icon =
     item.class === 1 ? (
       <Beast />
@@ -147,32 +164,99 @@ export default forwardRef(function Card(props, ref) {
             </Box>
           </Box>
         </Box>
-        <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1">
-          <StyledImage
-            style={{
-              backgroundImage: `url("${item.image}")`,
-            }}
-          ></StyledImage>
-          {/* <img src={item.image} alt="axie1" style={{ height: imageWidth ?? '160px', width: 'fit-content', margin: '8px' }} /> */}
-          {showBuyOrSellButton && isSell ? (
+        <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1"
+        >
+          <StyledImage style={{
+            backgroundImage: `url("${item.image}")`
+          }}></StyledImage>
+          {showBuyOrSellButton && !isMySell && !isOwner ? (
+            <Switch
+              defaultChecked ={false}
+              disabled = {item.minPrice===item.price}
+              checked={!isBuyDirectly}
+              onChange={(e) => {
+                setIsBuyDirectly((!e.target.checked))
+              }}
+            // inputProps={{ 'make offer': 'buy directly' }}
+            />
+          ) : null
+          }
+          {showBuyOrSellButton && isSell && isApprove ? (
+            <div style ={{display : "flex" ,  alignItems: "center", justifyContent: "center", margin: "10px -5px" }}>
             <CssTextField
+              style ={{margin: "0 5px"}}
               width="50%"
               unit="ETH"
               type="number"
-              label={t('Price')}
+              label={t('Min Price')}
               variant="outlined"
               myBackgroundColor="#000000"
               myColor="#000000"
-              value={sellPrice}
+              value={minSellPrice}
               onChange={(e) => {
-                setSellPrice(e.target.value)
+                setMinSellPrice(e.target.value)
+              }}
+            />        
+              <CssTextField
+              width="50%"
+              unit="ETH"
+              type="number"
+              label={t('Max Price')}
+              variant="outlined"
+              myBackgroundColor="#000000"
+              myColor="#000000"
+              value={maxSellPrice}
+              onChange={(e) => {
+                setMaxSellPrice(e.target.value)
               }}
             />
-          ) : (
-            <Typography fontSize="20px" fontWeight={400}>
-              {item.price && item.price + ' ETH'}
+            </div>
+          ) : !isApprove && isSell ? null :  item.minPrice !== item.price ? (
+            <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
+              {item.minPrice + " to " + item.price + "ETH"}
+            </Typography>) : (
+            <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
+              {item.price === undefined ? null : item.price + "ETH"}
             </Typography>
           )}
+          {showBuyOrSellButton && !isMySell && !isOwner && !isBuyDirectly ? (
+            <CssTextField
+              width="60%"
+              unit="ETH"
+              type="number"
+              label={t('Offer amount')}
+              variant="filled"
+              myBackgroundColor="#ffffff"
+              myColor="#ffffff"
+              value={offerPrice}
+              onChange={(e) => {
+                setOfferPrice(e.target.value)
+              }}
+            />
+          ) : null}
+          {showBuyOrSellButton && !isOwner && !isBuyDirectly && item.currentPrice > 0 ? (
+            <div>
+              <br />
+              <Button variant="outlined" onClick={handleClickOpen}>
+                List Offer
+              </Button>
+              <OfferDiaglog
+                listOffer={offers}
+                open={open}
+                onClose={handleClose}
+              />
+            </div>
+
+          ) : showBuyOrSellButton && !isOwner && !isBuyDirectly
+            ? <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
+              {t("No offer")}
+            </Typography> : null}
+
+          {showBuyOrSellButton && !isOwner && !isBuyDirectly && item.currentPrice > 0 ? (
+            <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
+              {t("Lastest price is: ") + item.currentPrice} ETH
+            </Typography>
+          ) : null}
         </Box>
         {!account && showBuyOrSellButton && (
           <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={connectWallet}>
@@ -195,26 +279,38 @@ export default forwardRef(function Card(props, ref) {
             {t('Cancel')}
           </StyledButton>
         )}
-        {account && showBuyOrSellButton && !isMySell && (
+          {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
             onClick={() => {
+
               onClose && onClose()
               if (isSell && isApprove) {
-                if (!sellPrice) {
+
+                if (!minSellPrice || !maxSellPrice ) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
-                if (sellPrice && parseFloat(sellPrice) == 0) {
-                  alertMessage(t('Error'), t('Sell price must greater than 0'), 'error')
+                if (minSellPrice && parseFloat(minSellPrice) === 0) {
+                  alertMessage(t('Error'), t('Min sell price must greater than 0'), 'error')
                 }
-                onSell(item, sellPrice)
-              } else {
+                if (maxSellPrice && parseFloat(maxSellPrice) === 0) {
+                  alertMessage(t('Error'), t('Min sell price must greater than 0'), 'error')
+                }
+                onSell(item, minSellPrice, maxSellPrice)
+                return
+              }
+              if (!isBuyDirectly) {
+                onOffer(item, offerPrice)
+                return
+              }
+              if (isBuyDirectly) {
                 onBuy(item)
+                return
               }
             }}
           >
-            {isSell && isApprove ? t('Sell') : t('Buy')}
+            {isSell && isApprove ? t('Sell') : isBuyDirectly ? t('Buy Directly') : t('Make Offer')}
           </StyledButton>
         )}
       </Box>
