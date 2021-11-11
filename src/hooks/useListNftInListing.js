@@ -34,7 +34,7 @@ const useListNftInListing = () => {
             let minPrice = ethers.utils.formatUnits(i.minPrice.toString(), 'ether')
             let price = ethers.utils.formatUnits(i.maxPrice.toString(), 'ether')
             let currentPrice = ethers.utils.formatUnits(i.currentPrice.toString(), 'ether')
-            const tokenState = await nftContract.tokenDetail(i.tokenId)
+            const tokenState = await nftContract.tokenDetails(i.tokenId)
             let item = {
               id: i.itemId.toString(),
               minPrice,
