@@ -16,12 +16,11 @@ const useCreateToken = () => {
   const nftMarketContract = useNtfMarketContract()
   const chainId = useSelector((state) => state.provider.chainId)
   const block = useBlock()
-  console.log('block', block)
   const alertMessage = useAlertCallback()
   const { t } = useTranslation()
 
   return useCallback(
-    async (urlImage, price, classId, stats) => {
+    async (urlImage, minPrice, maxPrice, classId, stats) => {
       try {
         const data = JSON.stringify({
           urlImage,
@@ -43,13 +42,14 @@ const useCreateToken = () => {
           let value = event.args[2]
           let tokenId = value.toNumber()
           // listing token to market
-          price = ethers.utils.parseUnits(price, 'ether')
+          minPrice = ethers.utils.parseUnits(minPrice, 'ether')
+          maxPrice = ethers.utils.parseUnits(maxPrice, 'ether')
           const blockNumberAfter2Weeks = block + Math.floor(SECONDS_TIME_MAX_SELL / SECOND_PER_BLOCK[chainId])
           const listingTokenTx = await nftMarketContract.createMarketItem(
             NFT_ADDRESS[chainId],
             tokenId,
-            price.toString(),
-            price.toString(),
+            minPrice.toString(),
+            maxPrice.toString(),
             blockNumberAfter2Weeks,
             {
               value: ethers.utils.parseUnits(LISTING_PRICE.toString(), 'ether').toString(),

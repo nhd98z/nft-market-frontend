@@ -72,7 +72,7 @@ export const CssTextField = styled(TextField, { shouldForwardProp: isPropValid }
       borderBottomColor: myBackgroundColor ?? '#ffeedd',
     },
     '& .MuiOutlinedInput-root': {
-      borderRadius: '32px',
+      borderRadius: '20px',
       '& fieldset': {
         borderColor: myColor ?? '#decbbd',
       },
@@ -127,7 +127,7 @@ export const StyledFormControl = styled(FormControl)(({ width, value }) => ({
 }))
 
 export const StyledSelect = styled(Select)({
-  borderRadius: '32px !important',
+  borderRadius: '20px !important',
 })
 
 const StyledButton = styled(Button)`
@@ -167,7 +167,8 @@ const Axie1 = styled(Axie)`
 
 export default function Create() {
   const [urlImage, setUrlImage] = useState('')
-  const [price, setPrice] = useState('')
+  const [minPrice, setMinPrice] = useState('')
+  const [maxPrice, setMaxPrice] = useState('')
   const [classify, setClassify] = useState('') // BEAST PLANT BUG MECH
   const [stats, setStats] = useState({ health: 1, speed: 1, skill: 1, morale: 1 })
   const { t } = useTranslation()
@@ -199,24 +200,34 @@ export default function Create() {
           width="9vw"
           unit="ETH"
           type="number"
-          label={t('Price')}
+          label={t('Min Price')}
           variant="outlined"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          value={minPrice}
+          onChange={(e) => setMinPrice(e.target.value)}
         />
-        <StyledFormControl width="9vw" value={classify}>
-          <InputLabel style={{ color: '#decbbd' }}>{t('Class')}</InputLabel>
-          <StyledSelect displayEmpty value={classify} label={t('Class')} onChange={(e) => setClassify(e.target.value)}>
-            {Object.keys(ClassItem).map((item, index) => {
-              return (
-                <MenuItem value={ClassItem[item]} style={{ textTransform: 'capitalize' }} key={index}>
-                  {t(item.toLocaleLowerCase())}
-                </MenuItem>
-              )
-            })}
-          </StyledSelect>
-        </StyledFormControl>
+        <CssTextField
+          width="9vw"
+          unit="ETH"
+          type="number"
+          label={t('Max Price')}
+          variant="outlined"
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
+        />
+
       </Box>
+      <StyledFormControl width="20vw" value={classify}>
+        <InputLabel style={{ color: '#decbbd' }}>{t('Class')}</InputLabel>
+        <StyledSelect displayEmpty value={classify} label={t('Class')} onChange={(e) => setClassify(e.target.value)}>
+          {Object.keys(ClassItem).map((item, index) => {
+            return (
+              <MenuItem value={ClassItem[item]} style={{ textTransform: 'capitalize' }} key={index}>
+                {t(item.toLocaleLowerCase())}
+              </MenuItem>
+            )
+          })}
+        </StyledSelect>
+      </StyledFormControl>
       <Box width="20vw" display="flex" justifyContent="space-between">
         <Box
           display="flex"
@@ -292,12 +303,12 @@ export default function Create() {
       <StyledButton
         variant="primary"
         onClick={() => {
-          if (!urlImage || !price || !classify) {
+          if (!urlImage || !minPrice || !maxPrice || !classify) {
             alertMessage(t('Error'), t('Please fill input'), 'error')
             return
           }
           setTxPending(true)
-          onCreateToken(urlImage, price, classify, stats)
+          onCreateToken(urlImage, minPrice, maxPrice, classify, stats)
           setTxPending(false)
         }}
       >

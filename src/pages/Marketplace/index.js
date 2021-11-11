@@ -45,10 +45,6 @@ const PagingContainer = styled(Box)`
     display: flex;
     justify-content: center;
   `
-  const PaginationCaption = styled(Box)`
-    color: 'white'
-  `
-
 export default function Marketplace() {
   const itemsPerPage = 8
   const { t } = useTranslation()
@@ -214,16 +210,15 @@ export default function Marketplace() {
       <Pagination count={10} showFirstButton showLastButton color="secondary" style={{display: 'none'}}/>
         <ReactPaginate
           breakLabel="..."
-          nextLabel="next >"
+          nextLabel=">"
           onPageChange={handlePageClick}
           pageRangeDisplayed={5}
           pageCount={pageCount}
-          previousLabel="< previous"
+          previousLabel="<"
           renderOnZeroPageCount={null}
           pageClassName="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeMedium MuiPaginationItem-text MuiPaginationItem-circular MuiPaginationItem-textSecondary MuiPaginationItem-page css-19micn4-MuiButtonBase-root-MuiPaginationItem-root"
           previousClassName="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeMedium MuiPaginationItem-text MuiPaginationItem-circular MuiPaginationItem-textSecondary MuiPaginationItem-page css-19micn4-MuiButtonBase-root-MuiPaginationItem-root"
           nextClassName="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeMedium MuiPaginationItem-text MuiPaginationItem-circular MuiPaginationItem-textSecondary MuiPaginationItem-page css-19micn4-MuiButtonBase-root-MuiPaginationItem-root"
-          breakLabel="..."
           breakClassName="css-1v2lvtn-MuiPaginationItem-root"
           containerClassName="css-wjh20t-MuiPagination-ul"
           activeClassName="Mui-selected"

@@ -24,10 +24,14 @@ const useListNftInListing = () => {
             const tokenUri = await nftContract.tokenURI(i.tokenId)
             const tokenState = await nftContract._tokenDetails(i.tokenId)
             const meta = await axios.get(tokenUri)
-            let price = ethers.utils.formatUnits(i.minPrice.toString(), 'ether')
+            let minPrice = ethers.utils.formatUnits(i.minPrice.toString(), 'ether')
+            let price = ethers.utils.formatUnits(i.maxPrice.toString(), 'ether')
+            let currentPrice = ethers.utils.formatUnits(i.currentPrice.toString(), 'ether')
             let item = {
               id: i.itemId.toString(),
+              minPrice,
               price,
+              currentPrice,
               tokenId: i.tokenId.toNumber(),
               seller: i.seller,
               buyer: i.buyer,

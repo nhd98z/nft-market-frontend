@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import useNtfContract from './useNtfContract'
 import useNtfMarketContract from './useNtfMarketContract'
-import axios from 'axios'
 import { ethers } from 'ethers'
 import { useDispatch } from 'react-redux'
 import moment from 'moment'

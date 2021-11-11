@@ -57,6 +57,7 @@ const useListNftMyBought = () => {
               morale: tokenState.morale.toString(),
               skill: tokenState.skill.toString(),
               speed: tokenState.speed.toString(),
+              buyer: i.buyer
             }
             return item
           }),
