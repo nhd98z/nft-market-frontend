@@ -55,7 +55,7 @@
       { "indexed": false, "internalType": "uint256", "name": "skill", "type": "uint256" },
       { "indexed": false, "internalType": "uint256", "name": "morale", "type": "uint256" }
     ],
-    "name": "UpgrapdeLevel",
+    "name": "UpgradeLevel",
     "type": "event"
   },
   {
@@ -105,6 +105,20 @@
     "name": "isApprovedForAll",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "isLockItem",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
+    "name": "lock",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -192,7 +206,7 @@
   },
   {
     "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "tokenDetail",
+    "name": "tokenDetails",
     "outputs": [
       { "internalType": "uint8", "name": "class", "type": "uint8" },
       { "internalType": "uint256", "name": "level", "type": "uint256" },
@@ -242,6 +256,13 @@
   {
     "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
     "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
+    "name": "unlock",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

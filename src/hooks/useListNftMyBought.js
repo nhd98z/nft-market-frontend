@@ -55,7 +55,7 @@ const useListNftMyBought = () => {
             }else{
               meta = metaData[i.tokenId]
             }
-            const tokenState = await nftContract.tokenDetail(i.tokenId)
+            const tokenState = await nftContract.tokenDetails(i.tokenId)
             let item = {
               id: i.itemId.toString(),
               tokenId: i.tokenId.toNumber(),
@@ -66,6 +66,7 @@ const useListNftMyBought = () => {
               morale: tokenState.morale.toString(),
               skill: tokenState.skill.toString(),
               speed: tokenState.speed.toString(),
+              buyer: i.buyer
             }
             return item
           }),
