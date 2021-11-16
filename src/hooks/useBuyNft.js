@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { saveTxPending } from '../utils/index'
+import { saveTxPending, saveTxSuccess } from '../utils/index'
 import useAlertCallback from './useAlertCallback'
 import useNtfMarketContract from './useNtfMarketContract'
 
@@ -18,6 +18,8 @@ const useBuyNft = () => {
             value: price.toString(),
           })
           saveTxPending(buyNftTx.hash, t('Buy NFT #{{id}} successfully.', {id: item.id}))
+          saveTxSuccess(buyNftTx.hash, item.id)
+
           alertMessage(t('Success'), t('Submit transaction buy NFT success'), 'success')
         }
       } catch (e) {
