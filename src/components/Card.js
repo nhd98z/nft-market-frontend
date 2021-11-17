@@ -21,7 +21,7 @@ import { ReactComponent as Mech } from '../assets/mech.svg'
 import { ReactComponent as Bug } from '../assets/bug.svg'
 import useCancelMarketItem from '../hooks/useCancelMarketItem'
 import useLevelUp from '../hooks/useLevelUp'
-
+import { copyBuyer, inforTx } from '../utils/index'
 const StyledCard = styled(Box)`
   height: 320px;
   width: 225px;
@@ -88,13 +88,13 @@ export default forwardRef(function Card(props, ref) {
   const onLevelUp = useLevelUp()
   const { isApprove, onApprove } = useApproveAll()
   const histories = useSellHistories(item.tokenId)
+  const chainId = useSelector((state) => state.provider.chainId)
   const onCancelMarketItem = useCancelMarketItem()
   const offers = useListOffer(item.id)
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
   const isMyNft = item.buyer === undefined && item.seller === undefined
   const isOwner = item.buyer.toLowerCase() === account.toLowerCase()
-  const chainId = useSelector((state) => state.provider.chainId)
   function secondsToHms(d) {
     d = Number(d)
     var h = Math.floor(d / 3600)
@@ -167,7 +167,6 @@ export default forwardRef(function Card(props, ref) {
                 </Typography>
               </Box>
               <Box display="flex" alignItems="flex-start">
-                <MI.LocalFireDepartment fontSize="small" style={{ fill: '#c23a3a' }} />
                 <Typography fontSize="16px" lineHeight="normal">
                   {item.morale}
                 </Typography>
@@ -349,12 +348,22 @@ export default forwardRef(function Card(props, ref) {
               histories.map((item, index) => {
                 return (
                   <Box display="flex" justifyContent="space-between">
+                    <MI.CopyAllSharp
+                      onClick={() => copyBuyer(item.buyer)}
+                      fontSize="big"
+                      style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                    />
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                       {`${item.buyer.slice(0, 6)}...${item.buyer.slice(item.buyer.length - 4, item.buyer.length)}`}
                     </Typography>
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                       {item.price} ETH ({item.time})
                     </Typography>
+                    <MI.LoginSharp
+                      onClick={() => inforTx(chainId, item.itemMarketId)}
+                      fontSize="big"
+                      style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                    />
                   </Box>
                 )
               })
