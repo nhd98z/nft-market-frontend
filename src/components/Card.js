@@ -21,6 +21,7 @@ import { ReactComponent as Mech } from '../assets/mech.svg'
 import { ReactComponent as Bug } from '../assets/bug.svg'
 import useCancelMarketItem from '../hooks/useCancelMarketItem'
 import useLevelUp from '../hooks/useLevelUp'
+import { SECOND_PER_BLOCK } from '../constants'
 const StyledCard = styled(Box)`
   height: 320px;
   width: 225px;
@@ -93,6 +94,16 @@ export default forwardRef(function Card(props, ref) {
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
   const isMyNft = item.buyer === undefined && item.seller === undefined
   const isOwner = item.buyer.toLowerCase() === account.toLowerCase()
+  const chainId = useSelector((state) => state.provider.chainId)
+  function secondsToHms(d) {
+    d = Number(d);
+    var h = Math.floor(d / 3600);
+    var m = Math.floor(d % 3600 / 60);
+
+    var hDisplay = h > 0 ? h + (h === 1 ? " hour, " : " hours, ") : "";
+    var mDisplay = m > 0 ? m + (m === 1 ? " minute " : " minutes ") : "";
+    return hDisplay + mDisplay ;
+  }
   const icon =
     item.class === 1 ? (
       <Beast />
@@ -171,47 +182,52 @@ export default forwardRef(function Card(props, ref) {
           }}></StyledImage>
           {showBuyOrSellButton && !isMySell && !isOwner ? (
             <Switch
-              defaultChecked ={false}
-              disabled = {item.minPrice===item.price}
+              defaultChecked={false}
+              disabled={item.minPrice === item.price}
               checked={!isBuyDirectly}
               onChange={(e) => {
                 setIsBuyDirectly((!e.target.checked))
               }}
-            // inputProps={{ 'make offer': 'buy directly' }}
             />
           ) : null
           }
+          {showBuyOrSellButton && !isSell ? (
+            <Typography fontSize="12px" color = "#90b8ef" lineHeight="12px" fontWeight={400}>
+              {t('Time remains: ') + secondsToHms((item.remainBlock * SECOND_PER_BLOCK[chainId]))}
+            </Typography>
+          ) : null
+          }
           {showBuyOrSellButton && isSell && isApprove ? (
-            <div style ={{display : "flex" ,  alignItems: "center", justifyContent: "center", margin: "10px -5px" }}>
-            <CssTextField
-              style ={{margin: "0 5px"}}
-              width="50%"
-              unit="ETH"
-              type="number"
-              label={t('Min Price')}
-              variant="outlined"
-              myBackgroundColor="#000000"
-              myColor="#000000"
-              value={minSellPrice}
-              onChange={(e) => {
-                setMinSellPrice(e.target.value)
-              }}
-            />        
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "10px -5px" }}>
               <CssTextField
-              width="50%"
-              unit="ETH"
-              type="number"
-              label={t('Max Price')}
-              variant="outlined"
-              myBackgroundColor="#000000"
-              myColor="#000000"
-              value={maxSellPrice}
-              onChange={(e) => {
-                setMaxSellPrice(e.target.value)
-              }}
-            />
+                style={{ margin: "0 5px" }}
+                width="50%"
+                unit="ETH"
+                type="number"
+                label={t('Min Price')}
+                variant="outlined"
+                myBackgroundColor="#000000"
+                myColor="#000000"
+                value={minSellPrice}
+                onChange={(e) => {
+                  setMinSellPrice(e.target.value)
+                }}
+              />
+              <CssTextField
+                width="50%"
+                unit="ETH"
+                type="number"
+                label={t('Max Price')}
+                variant="outlined"
+                myBackgroundColor="#000000"
+                myColor="#000000"
+                value={maxSellPrice}
+                onChange={(e) => {
+                  setMaxSellPrice(e.target.value)
+                }}
+              />
             </div>
-          ) : !isApprove && isSell ? null :  item.minPrice !== item.price ? (
+          ) : !isApprove && isSell ? null : item.minPrice !== item.price ? (
             <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
               {item.minPrice + " to " + item.price + "ETH"}
             </Typography>) : (
@@ -273,13 +289,14 @@ export default forwardRef(function Card(props, ref) {
             variant="contained"
             style={{ margin: '8px 0' }}
             onClick={() => {
+              console.log(item)
               onCancelMarketItem(item.id)
             }}
           >
             {t('Cancel')}
           </StyledButton>
         )}
-          {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && (
+        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
@@ -288,7 +305,7 @@ export default forwardRef(function Card(props, ref) {
               onClose && onClose()
               if (isSell && isApprove) {
 
-                if (!minSellPrice || !maxSellPrice ) {
+                if (!minSellPrice || !maxSellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
                 if (minSellPrice && parseFloat(minSellPrice) === 0) {
