@@ -40,6 +40,11 @@ export const OWNER_NFT_MARKET = {
   [ChainId.ROPSTEN]: undefined,
   [ChainId.RINKEBY]: '0x090030D40A193a5966014c2D0B014F21459cb33e',
 }
+export const EXPLORER_TX = {
+  [ChainId.MAINNET]: undefined,
+  [ChainId.ROPSTEN]: undefined,
+  [ChainId.RINKEBY]: 'https://rinkeby.etherscan.io/tx/',
+}
 
 export const ClassItem = {
   BEAST: 1,

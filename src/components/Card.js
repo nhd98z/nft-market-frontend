@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import * as MI from '@mui/icons-material'
-import { Box, Button, Typography, Switch } from '@mui/material'
+import { Box, Button, Switch, Typography } from '@mui/material'
 import { forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { ClassItem } from '../constants'
+import { ClassItem, SECOND_PER_BLOCK } from '../constants'
 import useAlertCallback from '../hooks/useAlertCallback'
 import useApproveAll from '../hooks/useApproveAll'
 import useBuyNft from '../hooks/useBuyNft'
@@ -21,7 +21,7 @@ import { ReactComponent as Mech } from '../assets/mech.svg'
 import { ReactComponent as Bug } from '../assets/bug.svg'
 import useCancelMarketItem from '../hooks/useCancelMarketItem'
 import useLevelUp from '../hooks/useLevelUp'
-import { SECOND_PER_BLOCK } from '../constants'
+import { copyBuyer, inforTx } from '../utils/index'
 const StyledCard = styled(Box)`
   height: 340px;
   width: 225px;
@@ -65,15 +65,15 @@ const StyledButton = styled(Button)`
 `
 
 export default forwardRef(function Card(props, ref) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
 
   const handleClose = (value) => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
   const { t } = useTranslation()
   const alertMessage = useAlertCallback()
   const [minSellPrice, setMinSellPrice] = useState('')
@@ -88,6 +88,7 @@ export default forwardRef(function Card(props, ref) {
   const onLevelUp = useLevelUp()
   const { isApprove, onApprove } = useApproveAll()
   const histories = useSellHistories(item.tokenId)
+  const chainId = useSelector((state) => state.provider.chainId)
   const onCancelMarketItem = useCancelMarketItem()
   const offers = useListOffer(item.id)
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
@@ -172,7 +173,6 @@ export default forwardRef(function Card(props, ref) {
                 </Typography>
               </Box>
               <Box display="flex" alignItems="flex-start">
-                <MI.LocalFireDepartment fontSize="small" style={{ fill: '#c23a3a' }} />
                 <Typography fontSize="16px" lineHeight="normal">
                   {item.morale}
                 </Typography>
@@ -180,18 +180,19 @@ export default forwardRef(function Card(props, ref) {
             </Box>
           </Box>
         </Box>
-        <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1"
-        >
-          <StyledImage style={{
-            backgroundImage: `url("${item.image}")`
-          }}></StyledImage>
+        <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1">
+          <StyledImage
+            style={{
+              backgroundImage: `url("${item.image}")`,
+            }}
+          ></StyledImage>
           {showBuyOrSellButton && !isMySell && !isOwner ? (
             <Switch
               defaultChecked={false}
               disabled={item.minPrice === item.price}
               checked={!isBuyDirectly}
               onChange={(e) => {
-                setIsBuyDirectly((!e.target.checked))
+                setIsBuyDirectly(!e.target.checked)
               }}
             />
           ) : null
@@ -200,8 +201,7 @@ export default forwardRef(function Card(props, ref) {
             <Typography fontSize="12px" color="#90b8ef" lineHeight="12px" fontWeight={400}>
               {item.remainBlock <= 0 ? t('Auction ended') : t('Time remains: ') + secondsToHms((item.remainBlock * SECOND_PER_BLOCK[chainId]))}
             </Typography>
-          ) : null
-          }
+          ) : null}
           {showBuyOrSellButton && isSell && isApprove ? (
             <Box>
 
@@ -256,10 +256,11 @@ export default forwardRef(function Card(props, ref) {
 
           ) : !isApprove && isSell ? null : item.minPrice !== item.price ? (
             <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
-              {item.minPrice + " to " + item.price + "ETH"}
-            </Typography>) : (
+              {item.minPrice + ' to ' + item.price + 'ETH'}
+            </Typography>
+          ) : (
             <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
-              {item.price === undefined ? null : item.price + "ETH"}
+              {item.price === undefined ? null : item.price + 'ETH'}
             </Typography>
           )}
           {showBuyOrSellButton && !isMySell && !isOwner && !isBuyDirectly ? (
@@ -291,15 +292,15 @@ export default forwardRef(function Card(props, ref) {
                 onClose={handleClose}
               />
             </div>
-
-          ) : showBuyOrSellButton && !isOwner && !isBuyDirectly
-            ? <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
-              {t("No offer")}
-            </Typography> : null}
+          ) : showBuyOrSellButton && !isOwner && !isBuyDirectly ? (
+            <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
+              {t('No offer')}
+            </Typography>
+          ) : null}
 
           {showBuyOrSellButton && !isOwner && !isBuyDirectly && item.currentPrice > 0 ? (
             <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
-              {t("Lastest price is: ") + item.currentPrice} ETH
+              {t('Lastest price is: ') + item.currentPrice} ETH
             </Typography>
           ) : null}
         </Box>
@@ -330,10 +331,8 @@ export default forwardRef(function Card(props, ref) {
             style={{ margin: '8px 0' }}
             disabled = {item.remainBlock <= 0&&!isBuyDirectly}
             onClick={() => {
-
               onClose && onClose()
               if (isSell && isApprove) {
-
                 if (!minSellPrice || !maxSellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
@@ -388,12 +387,22 @@ export default forwardRef(function Card(props, ref) {
               histories.map((item, index) => {
                 return (
                   <Box display="flex" justifyContent="space-between">
+                    <MI.CopyAllSharp
+                      onClick={() => copyBuyer(item.buyer)}
+                      fontSize="big"
+                      style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                    />
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                       {`${item.buyer.slice(0, 6)}...${item.buyer.slice(item.buyer.length - 4, item.buyer.length)}`}
                     </Typography>
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                       {item.price} ETH ({item.time})
                     </Typography>
+                    <MI.LoginSharp
+                      onClick={() => inforTx(chainId, item.itemMarketId)}
+                      fontSize="big"
+                      style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                    />
                   </Box>
                 )
               })
