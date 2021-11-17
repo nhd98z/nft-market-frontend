@@ -1,15 +1,15 @@
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material'
 import styled from '@emotion/styled'
 import isPropValid from '@emotion/is-prop-valid'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import axie1 from '../../assets/axie-1.png'
 import * as MI from '@mui/icons-material'
-import { ClassItem } from '../../constants/index'
+import { ClassItem, OWNER_NFT } from '../../constants/index'
 import useCreateToken from '../../hooks/useCreateToken'
 import useAlertCallback from '../../hooks/useAlertCallback'
-import {SECOND_PER_BLOCK } from '../../constants'
 import { useSelector } from 'react-redux'
+import { connectWallet, timeToBlockNumber} from '../../utils'
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -47,7 +47,7 @@ const Heading = styled.h1`
     }
   }
 `
-const CssTimeTextField = styled(TextField, {})(
+export const CssTimeTextField = styled(TextField, {})(
   ({ value, unit, width, myBackgroundColor, myColor }) => ({
     width: width,
     '& input': {
@@ -180,16 +180,17 @@ export const StyledSelect = styled(Select)({
 })
 
 const StyledButton = styled(Button)`
-  background: #ffeedd;
-  color: #000000;
   width: 20vw;
-  border-radius: 32px;
-  padding: 16.5px 14px;
-  font-weight: 500;
-
+  background: #ff4c29;
+  transition: all 200ms ease-in-out;
+  box-shadow: rgba(0, 0, 0, 0.9);
+  border-radius: 12px;
+  font-size: 16px;
+  padding: 8px;
   :hover,
+  :active,
   :focus {
-    background: #ffeedd;
+    background: #ff7c62;
   }
 `
 
@@ -220,19 +221,20 @@ export default function Create() {
   const [maxPrice, setMaxPrice] = useState('')
   const [classify, setClassify] = useState('') // BEAST PLANT BUG MECH
   const [stats, setStats] = useState({ health: 1, speed: 1, skill: 1, morale: 1 })
-  const [blockNumber,setBlockNumber] = useState(0)
+  const [blockNumber, setBlockNumber] = useState(0)
   const { t } = useTranslation()
   const onCreateToken = useCreateToken()
   const alertMessage = useAlertCallback()
   const [txPending, setTxPending] = useState(false)
   const chainId = useSelector((state) => state.provider.chainId)
-  var currentdate = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString().split('.')[0]
-  function timeToBlockNumber(time){
-    let pickTime = new Date(time).getTime() 
-    let currentTimeStamp = Date.now() 
-    let blockNumber = Math.floor((pickTime-currentTimeStamp)/1000/SECOND_PER_BLOCK[chainId])
-    setBlockNumber(blockNumber)
-  }
+  var currentdate = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0]
+  const account = useSelector((state) => state.provider.account) ?? ''
+  const [isOwner, setIsOwner] = useState(false)
+  
+  useEffect(() => {
+    setIsOwner(account === OWNER_NFT[chainId])
+  }, [account, chainId])
+
   return (
     <Container>
       <Axie1 src={axie1} alt="axie1" />
@@ -290,22 +292,22 @@ export default function Create() {
           id="datetime-local"
           label="Auction close"
           type="datetime-local"
-          
-        inputProps={{
-          min: currentdate
-        }}
+
+          inputProps={{
+            min: currentdate
+          }}
           defaultValue={currentdate}
           sx={{ width: 250 }}
           InputLabelProps={{
             shrink: true,
           }}
           width="20vw"
-          onChange={(e) => timeToBlockNumber(e.target.value)}
+          onChange={(e) => setBlockNumber(timeToBlockNumber(e.target.value,chainId))}
         />
       </Box>
-      <Typography color={blockNumber>=10 ?"#decbbd":"#c23a3a"} width="20vw" fontSize="12px"  fontWeight={400}>
-          {t("Number of block to close: ")+blockNumber}
-        </Typography>
+      <Typography color={blockNumber >= 10 ? "#decbbd" : "#c23a3a"} width="20vw" fontSize="12px" fontWeight={400}>
+        {t("Number of block to close: ") + blockNumber}
+      </Typography>
       <Box width="20vw" display="flex" justifyContent="space-between">
         <Box
           display="flex"
@@ -378,36 +380,47 @@ export default function Create() {
           <Typography fontSize="20px">{stats.morale}</Typography>
         </Box>
       </Box>
-      <StyledButton
-        variant="primary"
-        onClick={() => {
-          if (!urlImage || !minPrice || !maxPrice || !classify) {
-            alertMessage(t('Error'), t('Please fill input'), 'error')
-            return
-          }
-          if (parseFloat(minPrice) === 0) {
-            alertMessage(t('Error'), t('Min price must greater than 0'), 'error')
-            return
-          }
-          if (parseFloat(maxPrice) === 0) {
-            alertMessage(t('Error'), t('Max price must greater than 0'), 'error')
-            return
-          }
-          if (parseFloat(maxPrice) < parseFloat(minPrice) ) {
-            alertMessage(t('Error'), t('Max price must greater than min price'), 'error')
-            return
-          }
-          if(blockNumber<10){
-            alertMessage(t('Error'), t('Number of block must >= 10 '), 'error')
-            return
-          }
-          setTxPending(true)
-          onCreateToken(urlImage, minPrice, maxPrice, classify, stats, blockNumber)
-          setTxPending(false)
-        }}
-      >
-        {txPending ? t('Creating') : t('Create')}
-      </StyledButton>
+      {!account ? (
+        <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={connectWallet}>
+          {t('Connect Metamask')}
+        </StyledButton>
+      ) : !isOwner ? (
+        <StyledButton variant="contained" disabled="true" style={{ margin: '8px 0' }} >
+          {t('Need to switch to admin wallet')}
+        </StyledButton>
+      ) :
+        (<StyledButton
+          variant="primary"
+          onClick={() => {
+            if (!urlImage || !minPrice || !maxPrice || !classify) {
+              alertMessage(t('Error'), t('Please fill input'), 'error')
+              return
+            }
+            if (parseFloat(minPrice) === 0) {
+              alertMessage(t('Error'), t('Min price must greater than 0'), 'error')
+              return
+            }
+            if (parseFloat(maxPrice) === 0) {
+              alertMessage(t('Error'), t('Max price must greater than 0'), 'error')
+              return
+            }
+            if (parseFloat(maxPrice) < parseFloat(minPrice)) {
+              alertMessage(t('Error'), t('Max price must greater than min price'), 'error')
+              return
+            }
+            if (blockNumber < 10) {
+              alertMessage(t('Error'), t('Number of block must >= 10 '), 'error')
+              return
+            }
+            setTxPending(true)
+            onCreateToken(urlImage, minPrice, maxPrice, classify, stats, blockNumber)
+            setTxPending(false)
+          }}
+        >
+          {txPending ? t('Creating') : t('Create')}
+        </StyledButton>)
+      }
+
     </Container>
   )
 }
