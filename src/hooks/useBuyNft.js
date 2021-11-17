@@ -14,11 +14,12 @@ const useBuyNft = () => {
       try {
         if (nftMarketContract) {
           const price = ethers.utils.parseUnits(item.price, 'ether')
+          console.log(item)
           const buyNftTx = await nftMarketContract.buyDirectly(item.id, {
             value: price.toString(),
           })
-          saveTxPending(buyNftTx.hash, t('Buy NFT #{{id}} successfully.', {id: item.id}))
-          alertMessage(t('Success'), t('Submit transaction buy NFT success'), 'success')
+          saveTxPending(buyNftTx.hash, t('Buy NFT #{{id}}.', {id: item.id}))
+          alertMessage(t('Submitted'), t('Transaction buy NFT submitted'), 'success')
         }
       } catch (e) {
         console.error(e)

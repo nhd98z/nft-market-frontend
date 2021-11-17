@@ -23,9 +23,8 @@ const useMakeOffer = () => {
                 value: ethers.utils.parseUnits(amount.toString(), 'ether').toString()
               },
             )
-            saveTxPending(makeOfferTx.hash)
-            alertMessage(t('Success'), t('Make Offer success'), 'success')
-          
+            saveTxPending(makeOfferTx.hash , t('Make offer for item #{{id}}.', {id: item.id}))
+            alertMessage(t('Submitted'), t('Make Offer submitted'), 'success')
         } catch (e) {
           console.error(e)
           return false 

@@ -13,8 +13,8 @@ const useCancelMarketItem = () => {
     async (itemId) => {
       try {
         const cancelItemTx = await nftMarketContract.cancelMarketItem(itemId)
-        saveTxPending(cancelItemTx.hash, t('Cancel item #{{id}} successfully.', {id: itemId}))
-        alertMessage(t('Success'), t('Cancel market item successfully'), 'success')
+        saveTxPending(cancelItemTx.hash, t('Cancel item #{{id}}.', {id: itemId}))
+        alertMessage(t('Submitted'), t('Cancel market item submitted'), 'success')
         return true
       } catch (e) {
         console.error(e)
