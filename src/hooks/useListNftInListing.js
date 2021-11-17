@@ -53,6 +53,7 @@ const useListNftInListing = () => {
               skill: tokenState.skill.toString(),
               speed: tokenState.speed.toString(),
               remainBlock,
+              endBlock: blockEnd,
             }
             return item
           }),

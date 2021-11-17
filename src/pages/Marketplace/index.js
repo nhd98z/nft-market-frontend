@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux'
 import useListNftMyBought from '../../hooks/useListNftMyBought'
 import _ from 'lodash'
 import ReactPaginate from 'react-paginate'
+import useBlock from '../../hooks/useBlock'
 import Pagination from '@mui/material/Pagination'
 const Container = styled(Box)`
   width: calc(100% - 16px);
@@ -59,6 +60,7 @@ export default function Marketplace() {
 
   const [openModal, setOpenModal] = useState(false)
   const [itemModal, setItemModal] = useState({})
+  const block = useBlock()
 
   const listNftIsListing = useListNftInListing()
   const listNftIsMyBought = useListNftMyBought()
@@ -74,8 +76,12 @@ export default function Marketplace() {
       case 'Buy from Admin':
         result = _.filter(
           listNftIsListing,
-          (item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase(),
+          (item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase()
+           && block < item.endBlock,
         )
+        break
+      case 'Auction Ended':
+        result = _.filter(listNftIsListing, (item) => block >= item.endBlock)
         break
       default:
         result = listNftIsListing
@@ -172,6 +178,7 @@ export default function Marketplace() {
           >
             <MenuItem value="All">{t('All')}</MenuItem>
             <MenuItem value="Buy from Admin">{t('Buy from Admin')}</MenuItem>
+            <MenuItem value="Auction Ended">{t('Auction Ended')}</MenuItem>
           </StyledSelect>
         </StyledFormControl>
         <StyledFormControl width="120px" value={filterByClassify}>

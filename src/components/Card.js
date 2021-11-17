@@ -12,6 +12,8 @@ import useMakeOffer from '../hooks/useMakeOffer'
 import useSellHistories from '../hooks/useSellHistories'
 import useListOffer from '../hooks/useListOffer'
 import useSellNft from '../hooks/useSellNft'
+import useClaimReward from '../hooks/useClaimReward'
+import useBlock from '../hooks/useBlock'
 import OfferDiaglog from './OfferDialog'
 import { CssTextField } from '../pages/Create'
 import { connectWallet } from '../utils'
@@ -65,15 +67,15 @@ const StyledButton = styled(Button)`
 `
 
 export default forwardRef(function Card(props, ref) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
 
   const handleClose = (value) => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
   const { t } = useTranslation()
   const alertMessage = useAlertCallback()
   const [minSellPrice, setMinSellPrice] = useState('')
@@ -89,20 +91,24 @@ export default forwardRef(function Card(props, ref) {
   const { isApprove, onApprove } = useApproveAll()
   const histories = useSellHistories(item.tokenId)
   const onCancelMarketItem = useCancelMarketItem()
+  const onClaimReward = useClaimReward()
+  const block = useBlock()
+  const isEndAuction = block >= item.endBlock
   const offers = useListOffer(item.id)
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
   const isMyNft = item.buyer === undefined && item.seller === undefined
   const isOwner = item.buyer.toLowerCase() === account.toLowerCase()
   const chainId = useSelector((state) => state.provider.chainId)
+  const isLatestOffer = offers[0]?.asker.toLowerCase() === account.toLowerCase()
   function secondsToHms(d) {
-    d = Number(d);
-    var h = Math.floor(d / 3600);
-    var m = Math.floor(d % 3600 / 60);
+    d = Number(d)
+    var h = Math.floor(d / 3600)
+    var m = Math.floor((d % 3600) / 60)
 
-    var hDisplay = h > 0 ? h + (h === 1 ? " hour, " : " hours, ") : "";
-    var mDisplay = m > 0 ? m + (m === 1 ? " minute " : " minutes ") : "";
-    return hDisplay + mDisplay ;
+    var hDisplay = h > 0 ? h + (h === 1 ? ' hour, ' : ' hours, ') : ''
+    var mDisplay = m > 0 ? m + (m === 1 ? ' minute ' : ' minutes ') : ''
+    return hDisplay + mDisplay
   }
   const icon =
     item.class === 1 ? (
@@ -175,32 +181,31 @@ export default forwardRef(function Card(props, ref) {
             </Box>
           </Box>
         </Box>
-        <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1"
-        >
-          <StyledImage style={{
-            backgroundImage: `url("${item.image}")`
-          }}></StyledImage>
+        <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" flex="1">
+          <StyledImage
+            style={{
+              backgroundImage: `url("${item.image}")`,
+            }}
+          ></StyledImage>
           {showBuyOrSellButton && !isMySell && !isOwner ? (
             <Switch
               defaultChecked={false}
               disabled={item.minPrice === item.price}
               checked={!isBuyDirectly}
               onChange={(e) => {
-                setIsBuyDirectly((!e.target.checked))
+                setIsBuyDirectly(!e.target.checked)
               }}
             />
-          ) : null
-          }
+          ) : null}
           {showBuyOrSellButton && !isSell ? (
-            <Typography fontSize="12px" color = "#90b8ef" lineHeight="12px" fontWeight={400}>
-              {t('Time remains: ') + secondsToHms((item.remainBlock * SECOND_PER_BLOCK[chainId]))}
+            <Typography fontSize="12px" color="#90b8ef" lineHeight="12px" fontWeight={400}>
+              {t('Time remains: ') + secondsToHms(item.remainBlock * SECOND_PER_BLOCK[chainId])}
             </Typography>
-          ) : null
-          }
+          ) : null}
           {showBuyOrSellButton && isSell && isApprove ? (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "10px -5px" }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '10px -5px' }}>
               <CssTextField
-                style={{ margin: "0 5px" }}
+                style={{ margin: '0 5px' }}
                 width="50%"
                 unit="ETH"
                 type="number"
@@ -229,13 +234,14 @@ export default forwardRef(function Card(props, ref) {
             </div>
           ) : !isApprove && isSell ? null : item.minPrice !== item.price ? (
             <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
-              {item.minPrice + " to " + item.price + "ETH"}
-            </Typography>) : (
+              {item.minPrice + ' to ' + item.price + ' ETH'}
+            </Typography>
+          ) : (
             <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
-              {item.price === undefined ? null : item.price + "ETH"}
+              {item.price === undefined ? null : item.price + ' ETH'}
             </Typography>
           )}
-          {showBuyOrSellButton && !isMySell && !isOwner && !isBuyDirectly ? (
+          {showBuyOrSellButton && !isMySell && !isOwner && !isBuyDirectly && !isEndAuction ? (
             <CssTextField
               width="60%"
               unit="ETH"
@@ -256,21 +262,17 @@ export default forwardRef(function Card(props, ref) {
               <Button variant="outlined" onClick={handleClickOpen}>
                 List Offer
               </Button>
-              <OfferDiaglog
-                listOffer={offers}
-                open={open}
-                onClose={handleClose}
-              />
+              <OfferDiaglog listOffer={offers} open={open} onClose={handleClose} />
             </div>
-
-          ) : showBuyOrSellButton && !isOwner && !isBuyDirectly
-            ? <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
-              {t("No offer")}
-            </Typography> : null}
+          ) : showBuyOrSellButton && !isOwner && !isBuyDirectly ? (
+            <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
+              {t('No offer')}
+            </Typography>
+          ) : null}
 
           {showBuyOrSellButton && !isOwner && !isBuyDirectly && item.currentPrice > 0 ? (
             <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
-              {t("Lastest price is: ") + item.currentPrice} ETH
+              {t('Latest price: ') + item.currentPrice} ETH
             </Typography>
           ) : null}
         </Box>
@@ -289,22 +291,31 @@ export default forwardRef(function Card(props, ref) {
             variant="contained"
             style={{ margin: '8px 0' }}
             onClick={() => {
-              console.log(item)
               onCancelMarketItem(item.id)
             }}
           >
             {t('Cancel')}
           </StyledButton>
         )}
-        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && (
+        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && 
+        isLatestOffer && isEndAuction && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
             onClick={() => {
-
+              onClaimReward(item, offers[0])
+            }}
+          >
+            {t('Claim')}
+          </StyledButton>
+        )}
+        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && !isEndAuction && (
+          <StyledButton
+            variant="contained"
+            style={{ margin: '8px 0' }}
+            onClick={() => {
               onClose && onClose()
               if (isSell && isApprove) {
-
                 if (!minSellPrice || !maxSellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
