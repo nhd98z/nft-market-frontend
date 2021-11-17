@@ -32,8 +32,8 @@ const useApproveAll = () => {
       try {
         if (nftContract && chainId && account) {
           const approveTx = await nftContract.setApprovalForAll(NFT_MARKET_ADDRESS[chainId], true)
-          saveTxPending(approveTx.hash, t('Approve for NFT Market successfully.'))
-          alertMessage(t('Success'), t('Submit transaction approve success'), 'success')
+          saveTxPending(approveTx.hash, t('Approve for NFT Market.'))
+          alertMessage(t('Submitted'), t('Submit transaction approve success'), 'success')
         }
       } catch (e) {
         console.error(e)
