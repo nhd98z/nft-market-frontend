@@ -91,11 +91,11 @@
       { "indexed": false, "internalType": "address", "name": "nftContract", "type": "address" },
       { "indexed": false, "internalType": "uint256", "name": "itemId", "type": "uint256" },
       { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "offerId", "type": "uint256" },
-      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "blockTime", "type": "uint256" }
+      { "indexed": false, "internalType": "uint256", "name": "blockTime", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" }
     ],
-    "name": "OfferRefunded",
+    "name": "RetrieveItem",
     "type": "event"
   },
   {
@@ -485,16 +485,6 @@
     "name": "makeOffer",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "itemId", "type": "uint256" },
-      { "internalType": "uint256", "name": "offerId", "type": "uint256" }
-    ],
-    "name": "refundOffer",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
