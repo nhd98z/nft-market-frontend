@@ -12,6 +12,8 @@ import useMakeOffer from '../hooks/useMakeOffer'
 import useSellHistories from '../hooks/useSellHistories'
 import useListOffer from '../hooks/useListOffer'
 import useSellNft from '../hooks/useSellNft'
+import useClaimReward from '../hooks/useClaimReward'
+import useBlock from '../hooks/useBlock'
 import OfferDialog from './OfferDialog'
 import { CssTextField, CssTimeTextField } from '../pages/Create'
 import { connectWallet, timeToBlockNumber } from '../utils'
@@ -90,6 +92,9 @@ export default forwardRef(function Card(props, ref) {
   const histories = useSellHistories(item.tokenId)
   const chainId = useSelector((state) => state.provider.chainId)
   const onCancelMarketItem = useCancelMarketItem()
+  const onClaimReward = useClaimReward()
+  const block = useBlock()
+  const isEndAuction = block >= item.endBlock
   const offers = useListOffer(item.id)
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
@@ -98,6 +103,7 @@ export default forwardRef(function Card(props, ref) {
   const chainId = useSelector((state) => state.provider.chainId)
   const [blockNumber, setBlockNumber] = useState(0)
   var currentdate = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0]
+  const isLatestOffer = offers[0]?.asker.toLowerCase() === account.toLowerCase()
   function secondsToHms(d) {
     d = Number(d);
     if (d <= 0) return 0
@@ -256,14 +262,14 @@ export default forwardRef(function Card(props, ref) {
 
           ) : !isApprove && isSell ? null : item.minPrice !== item.price ? (
             <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
-              {item.minPrice + ' to ' + item.price + 'ETH'}
+              {item.minPrice + ' to ' + item.price + ' ETH'}
             </Typography>
           ) : (
             <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
-              {item.price === undefined ? null : item.price + 'ETH'}
+              {item.price === undefined ? null : item.price + ' ETH'}
             </Typography>
           )}
-          {showBuyOrSellButton && !isMySell && !isOwner && !isBuyDirectly ? (
+          {showBuyOrSellButton && !isMySell && !isOwner && !isBuyDirectly && !isEndAuction ? (
             <CssTextField
               width="60%"
               unit="ETH"
@@ -300,7 +306,7 @@ export default forwardRef(function Card(props, ref) {
 
           {showBuyOrSellButton && !isOwner && !isBuyDirectly && item.currentPrice > 0 ? (
             <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
-              {t('Lastest price is: ') + item.currentPrice} ETH
+              {t('Latest price: ') + item.currentPrice} ETH
             </Typography>
           ) : null}
         </Box>
@@ -325,7 +331,19 @@ export default forwardRef(function Card(props, ref) {
             {t('Cancel')}
           </StyledButton>
         )}
-        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && (
+        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && 
+        isLatestOffer && isEndAuction && (
+          <StyledButton
+            variant="contained"
+            style={{ margin: '8px 0' }}
+            onClick={() => {
+              onClaimReward(item, offers[0])
+            }}
+          >
+            {t('Claim')}
+          </StyledButton>
+        )}
+        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && !isEndAuction && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
