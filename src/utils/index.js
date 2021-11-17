@@ -1,4 +1,6 @@
 import Web3Modal from 'web3modal'
+import { SECOND_PER_BLOCK } from '../constants'
+import { EXPLORER_TX } from '../constants/index'
 
 export const saveTxPending = (tx, message) => {
   const txsStorage = JSON.parse(localStorage.getItem('tx_pending') ?? '{}') ?? {}
@@ -22,3 +24,35 @@ export const connectWallet = async () => {
   const web3Modal = new Web3Modal()
   await web3Modal.connect()
 }
+
+export const timeToBlockNumber =  (time, chainId) => {
+    let pickTime = new Date(time).getTime()
+    let currentTimeStamp = Date.now()
+    let blockNumber = Math.floor((pickTime - currentTimeStamp) / 1000 / SECOND_PER_BLOCK[chainId])
+    console.log(blockNumber)
+    
+    return blockNumber
+    // setBlockNumber(blockNumber)
+}
+export const getTxSuccess = () => {
+  return JSON.parse(localStorage.getItem('tx_success') ?? '{}') ?? {}
+}
+export const saveTxSuccess = (tx, itemMarketId) => {
+  const txsStorage = JSON.parse(localStorage.getItem('tx_success') ?? '{}') ?? {}
+  if (txsStorage.hasOwnProperty(itemMarketId)) {
+    return;
+  }
+  txsStorage[itemMarketId] = tx;
+  localStorage.setItem('tx_success', JSON.stringify(txsStorage))
+}
+export const copyBuyer = (buyer) => {
+  navigator.clipboard.writeText(buyer);
+}
+
+export const inforTx = (chainId, id) => {
+  if (getTxSuccess()[id] === undefined) {
+    return
+  }
+  window.open(EXPLORER_TX[chainId] + getTxSuccess()[id]);
+}
+

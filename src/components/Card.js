@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import * as MI from '@mui/icons-material'
-import { Box, Button, Typography, Switch } from '@mui/material'
+import { Box, Button, Switch, Typography } from '@mui/material'
 import { forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { ClassItem } from '../constants'
+import { ClassItem, SECOND_PER_BLOCK } from '../constants'
 import useAlertCallback from '../hooks/useAlertCallback'
 import useApproveAll from '../hooks/useApproveAll'
 import useBuyNft from '../hooks/useBuyNft'
@@ -14,18 +14,18 @@ import useListOffer from '../hooks/useListOffer'
 import useSellNft from '../hooks/useSellNft'
 import useClaimReward from '../hooks/useClaimReward'
 import useBlock from '../hooks/useBlock'
-import OfferDiaglog from './OfferDialog'
-import { CssTextField } from '../pages/Create'
-import { connectWallet } from '../utils'
+import OfferDialog from './OfferDialog'
+import { CssTextField, CssTimeTextField } from '../pages/Create'
+import { connectWallet, timeToBlockNumber } from '../utils'
 import { ReactComponent as Beast } from '../assets/beast.svg'
 import { ReactComponent as Plant } from '../assets/plant.svg'
 import { ReactComponent as Mech } from '../assets/mech.svg'
 import { ReactComponent as Bug } from '../assets/bug.svg'
 import useCancelMarketItem from '../hooks/useCancelMarketItem'
 import useLevelUp from '../hooks/useLevelUp'
-import { SECOND_PER_BLOCK } from '../constants'
+import { copyBuyer, inforTx } from '../utils/index'
 const StyledCard = styled(Box)`
-  height: 320px;
+  height: 340px;
   width: 225px;
   background: #2c394b;
   color: #ffffff;
@@ -90,6 +90,7 @@ export default forwardRef(function Card(props, ref) {
   const onLevelUp = useLevelUp()
   const { isApprove, onApprove } = useApproveAll()
   const histories = useSellHistories(item.tokenId)
+  const chainId = useSelector((state) => state.provider.chainId)
   const onCancelMarketItem = useCancelMarketItem()
   const onClaimReward = useClaimReward()
   const block = useBlock()
@@ -100,15 +101,18 @@ export default forwardRef(function Card(props, ref) {
   const isMyNft = item.buyer === undefined && item.seller === undefined
   const isOwner = item.buyer.toLowerCase() === account.toLowerCase()
   const chainId = useSelector((state) => state.provider.chainId)
+  const [blockNumber, setBlockNumber] = useState(0)
+  var currentdate = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0]
   const isLatestOffer = offers[0]?.asker.toLowerCase() === account.toLowerCase()
   function secondsToHms(d) {
-    d = Number(d)
-    var h = Math.floor(d / 3600)
-    var m = Math.floor((d % 3600) / 60)
+    d = Number(d);
+    if (d <= 0) return 0
+    var h = Math.floor(d / 3600);
+    var m = Math.floor(d % 3600 / 60);
 
-    var hDisplay = h > 0 ? h + (h === 1 ? ' hour, ' : ' hours, ') : ''
-    var mDisplay = m > 0 ? m + (m === 1 ? ' minute ' : ' minutes ') : ''
-    return hDisplay + mDisplay
+    var hDisplay = h > 0 ? h + (h === 1 ? " hour, " : " hours, ") : "";
+    var mDisplay = m > 0 ? m + (m === 1 ? " minute " : " minutes ") : "";
+    return hDisplay + mDisplay;
   }
   const icon =
     item.class === 1 ? (
@@ -120,7 +124,6 @@ export default forwardRef(function Card(props, ref) {
     ) : item.class === 4 ? (
       <Mech />
     ) : null
-
   return (
     <StyledCard {...props}>
       <Box padding="16px" width="100%">
@@ -138,6 +141,9 @@ export default forwardRef(function Card(props, ref) {
                 })}
               </Typography>
             </Box>
+            {item.seller!==undefined?<Typography marginLeft="4px" fontSize="10px" lineHeight="20px">
+               {`Seller: ${item.seller.slice(0, 6)}...${item.seller.slice(item.seller.length - 4, item.seller.length)}`}
+              </Typography>:null}
           </Box>
           {isMyNft && showBuyOrSellButton && (
             <Box>
@@ -173,7 +179,6 @@ export default forwardRef(function Card(props, ref) {
                 </Typography>
               </Box>
               <Box display="flex" alignItems="flex-start">
-                <MI.LocalFireDepartment fontSize="small" style={{ fill: '#c23a3a' }} />
                 <Typography fontSize="16px" lineHeight="normal">
                   {item.morale}
                 </Typography>
@@ -196,42 +201,65 @@ export default forwardRef(function Card(props, ref) {
                 setIsBuyDirectly(!e.target.checked)
               }}
             />
-          ) : null}
-          {showBuyOrSellButton && !isSell ? (
+          ) : null
+          }
+          {showBuyOrSellButton && (!isSell && !isBuyDirectly || isMySell)  ? (
             <Typography fontSize="12px" color="#90b8ef" lineHeight="12px" fontWeight={400}>
-              {t('Time remains: ') + secondsToHms(item.remainBlock * SECOND_PER_BLOCK[chainId])}
+              {item.remainBlock <= 0 ? t('Auction ended') : t('Time remains: ') + secondsToHms((item.remainBlock * SECOND_PER_BLOCK[chainId]))}
             </Typography>
           ) : null}
           {showBuyOrSellButton && isSell && isApprove ? (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '10px -5px' }}>
-              <CssTextField
-                style={{ margin: '0 5px' }}
-                width="50%"
-                unit="ETH"
-                type="number"
-                label={t('Min Price')}
-                variant="outlined"
-                myBackgroundColor="#000000"
-                myColor="#000000"
-                value={minSellPrice}
-                onChange={(e) => {
-                  setMinSellPrice(e.target.value)
-                }}
-              />
-              <CssTextField
-                width="50%"
-                unit="ETH"
-                type="number"
-                label={t('Max Price')}
-                variant="outlined"
-                myBackgroundColor="#000000"
-                myColor="#000000"
-                value={maxSellPrice}
-                onChange={(e) => {
-                  setMaxSellPrice(e.target.value)
-                }}
-              />
-            </div>
+            <Box>
+
+              <div style={{ width:"100%", display: "flex", alignItems: "center", justifyContent: "center", margin: "10px -5px 24px" }}>
+                <CssTextField
+                  style={{ margin: "0 5px" }}
+                  width="50%"
+                  unit="ETH"
+                  type="number"
+                  label={t('Min Price')}
+                  variant="filled"
+                  myBackgroundColor="#ffffff"
+                  myColor="#ffffff"
+                  value={minSellPrice}
+                  onChange={(e) => {
+                    setMinSellPrice(e.target.value)
+                  }}
+                />
+                <CssTextField
+                  width="50%"
+                  unit="ETH"
+                  type="number"
+                  label={t('Max Price')}
+                  variant="filled"
+                  myBackgroundColor="#ffffff"
+                  myColor="#ffffff"
+                  value={maxSellPrice}
+                  onChange={(e) => {
+                    setMaxSellPrice(e.target.value)
+                  }}
+                />
+              </div>
+                <CssTimeTextField
+                  id="datetime-local"
+                  label="Auction close"
+                  type="datetime-local"
+                  style = {{margin: "0 0 12px"}}
+                  inputProps={{
+                    min: currentdate
+                  }}
+                  defaultValue={currentdate}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  width="100%"
+                  onChange={(e) => setBlockNumber(timeToBlockNumber(e.target.value,chainId))}
+                />
+              <Typography  style = {{margin: "0 0 12px"}} color={blockNumber >= 10 ? "#ffffff" : "#c23a3a"} width="100%" fontSize="12px" fontWeight={400}>
+                {t("Number of block to close: ") + blockNumber}
+              </Typography>
+            </Box>
+
           ) : !isApprove && isSell ? null : item.minPrice !== item.price ? (
             <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
               {item.minPrice + ' to ' + item.price + ' ETH'}
@@ -246,6 +274,8 @@ export default forwardRef(function Card(props, ref) {
               width="60%"
               unit="ETH"
               type="number"
+              disabled = {item.remainBlock <= 0&&!isBuyDirectly}
+              InputProps={{ inputProps: { min: 0, max: 10 } }}
               label={t('Offer amount')}
               variant="filled"
               myBackgroundColor="#ffffff"
@@ -262,7 +292,11 @@ export default forwardRef(function Card(props, ref) {
               <Button variant="outlined" onClick={handleClickOpen}>
                 List Offer
               </Button>
-              <OfferDiaglog listOffer={offers} open={open} onClose={handleClose} />
+              <OfferDialog
+                listOffer={offers}
+                open={open}
+                onClose={handleClose}
+              />
             </div>
           ) : showBuyOrSellButton && !isOwner && !isBuyDirectly ? (
             <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
@@ -313,6 +347,7 @@ export default forwardRef(function Card(props, ref) {
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
+            disabled = {item.remainBlock <= 0&&!isBuyDirectly}
             onClick={() => {
               onClose && onClose()
               if (isSell && isApprove) {
@@ -325,7 +360,11 @@ export default forwardRef(function Card(props, ref) {
                 if (maxSellPrice && parseFloat(maxSellPrice) === 0) {
                   alertMessage(t('Error'), t('Min sell price must greater than 0'), 'error')
                 }
-                onSell(item, minSellPrice, maxSellPrice)
+                if (blockNumber < 10) {
+                  alertMessage(t('Error'), t('Number of block must >= 10 '), 'error')
+                  return
+                }
+                onSell(item, minSellPrice, maxSellPrice, blockNumber)
                 return
               }
               if (!isBuyDirectly) {
@@ -366,12 +405,22 @@ export default forwardRef(function Card(props, ref) {
               histories.map((item, index) => {
                 return (
                   <Box display="flex" justifyContent="space-between">
+                    <MI.CopyAllSharp
+                      onClick={() => copyBuyer(item.buyer)}
+                      fontSize="big"
+                      style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                    />
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                       {`${item.buyer.slice(0, 6)}...${item.buyer.slice(item.buyer.length - 4, item.buyer.length)}`}
                     </Typography>
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                       {item.price} ETH ({item.time})
                     </Typography>
+                    <MI.LoginSharp
+                      onClick={() => inforTx(chainId, item.itemMarketId)}
+                      fontSize="big"
+                      style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                    />
                   </Box>
                 )
               })

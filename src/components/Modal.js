@@ -11,7 +11,7 @@ export default function Modal({ open, onClose, itemModal }) {
     >
       <Card
         style={{
-          width: '337.5px',
+          width: '360px',
           maxHeight: '90vh',
           height: 'max-content',
           position: 'absolute',
