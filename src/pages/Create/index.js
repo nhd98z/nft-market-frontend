@@ -8,7 +8,8 @@ import * as MI from '@mui/icons-material'
 import { ClassItem } from '../../constants/index'
 import useCreateToken from '../../hooks/useCreateToken'
 import useAlertCallback from '../../hooks/useAlertCallback'
-
+import {SECOND_PER_BLOCK } from '../../constants'
+import { useSelector } from 'react-redux'
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -46,7 +47,55 @@ const Heading = styled.h1`
     }
   }
 `
-
+const CssTimeTextField = styled(TextField, {})(
+  ({ value, unit, width, myBackgroundColor, myColor }) => ({
+    width: width,
+    '& input': {
+      color: myBackgroundColor ?? '#ffeedd',
+    },
+    '& label': {
+      color: myColor ?? '#decbbd',
+      display: value ? 'block' : 'flex',
+      justifyContent: 'left',
+      width: '100%',
+    },
+    '&:hover': {
+      label: {
+        color: myBackgroundColor ?? '#ffeedd',
+      },
+    },
+    '& label.Mui-focused': {
+      color: myBackgroundColor ?? '#ffeedd',
+      display: 'block',
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: myBackgroundColor ?? '#ffeedd',
+    },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '20px',
+      '& fieldset': {
+        borderColor: myColor ?? '#decbbd',
+      },
+      '&:hover fieldset': {
+        borderColor: myBackgroundColor ?? '#ffeedd',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: myBackgroundColor ?? '#ffeedd',
+      },
+    },
+    '&::after': {
+      content: value && unit ? "'" + unit + "'" : "''",
+      position: 'absolute',
+      top: 0,
+      padding: 0,
+      margin: 0,
+      right: '16px',
+      display: 'flex',
+      alignItems: 'center',
+      height: '100%',
+    },
+  }),
+)
 export const CssTextField = styled(TextField, { shouldForwardProp: isPropValid })(
   ({ value, unit, width, myBackgroundColor, myColor }) => ({
     width: width,
@@ -171,11 +220,19 @@ export default function Create() {
   const [maxPrice, setMaxPrice] = useState('')
   const [classify, setClassify] = useState('') // BEAST PLANT BUG MECH
   const [stats, setStats] = useState({ health: 1, speed: 1, skill: 1, morale: 1 })
+  const [blockNumber,setBlockNumber] = useState(0)
   const { t } = useTranslation()
   const onCreateToken = useCreateToken()
   const alertMessage = useAlertCallback()
   const [txPending, setTxPending] = useState(false)
-
+  const chainId = useSelector((state) => state.provider.chainId)
+  var currentdate = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString().split('.')[0]
+  function timeToBlockNumber(time){
+    let pickTime = new Date(time).getTime() 
+    let currentTimeStamp = Date.now() 
+    let blockNumber = Math.floor((pickTime-currentTimeStamp)/1000/SECOND_PER_BLOCK[chainId])
+    setBlockNumber(blockNumber)
+  }
   return (
     <Container>
       <Axie1 src={axie1} alt="axie1" />
@@ -214,8 +271,8 @@ export default function Create() {
           value={maxPrice}
           onChange={(e) => setMaxPrice(e.target.value)}
         />
-
       </Box>
+
       <StyledFormControl width="20vw" value={classify}>
         <InputLabel style={{ color: '#decbbd' }}>{t('Class')}</InputLabel>
         <StyledSelect displayEmpty value={classify} label={t('Class')} onChange={(e) => setClassify(e.target.value)}>
@@ -228,6 +285,27 @@ export default function Create() {
           })}
         </StyledSelect>
       </StyledFormControl>
+      <Box width="20vw" display="flex" justifyContent="space-between">
+        <CssTimeTextField
+          id="datetime-local"
+          label="Auction close"
+          type="datetime-local"
+          
+        inputProps={{
+          min: currentdate
+        }}
+          defaultValue={currentdate}
+          sx={{ width: 250 }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          width="20vw"
+          onChange={(e) => timeToBlockNumber(e.target.value)}
+        />
+      </Box>
+      <Typography color={blockNumber>=10 ?"#decbbd":"#c23a3a"} width="20vw" fontSize="12px"  fontWeight={400}>
+          {t("Number of block to close: ")+blockNumber}
+        </Typography>
       <Box width="20vw" display="flex" justifyContent="space-between">
         <Box
           display="flex"
@@ -310,13 +388,21 @@ export default function Create() {
           if (parseFloat(minPrice) === 0) {
             alertMessage(t('Error'), t('Min price must greater than 0'), 'error')
             return
-          }       
+          }
           if (parseFloat(maxPrice) === 0) {
             alertMessage(t('Error'), t('Max price must greater than 0'), 'error')
             return
           }
+          if (parseFloat(maxPrice) < parseFloat(minPrice) ) {
+            alertMessage(t('Error'), t('Max price must greater than min price'), 'error')
+            return
+          }
+          if(blockNumber<10){
+            alertMessage(t('Error'), t('Number of block must >= 10 '), 'error')
+            return
+          }
           setTxPending(true)
-          onCreateToken(urlImage, minPrice, maxPrice, classify, stats)
+          onCreateToken(urlImage, minPrice, maxPrice, classify, stats, blockNumber)
           setTxPending(false)
         }}
       >

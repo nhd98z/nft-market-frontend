@@ -9,7 +9,6 @@ import useListNftInListing from '../../hooks/useListNftInListing'
 import { ClassItem, ITEMS_PER_PAGE } from '../../constants'
 import { useSelector } from 'react-redux'
 import useListNftMyBought from '../../hooks/useListNftMyBought'
-import ReactPaginate from 'react-paginate'
 import Pagination from '@mui/material/Pagination'
 
 import _ from 'lodash'
@@ -126,13 +125,13 @@ export default function Marketplace() {
   const onCloseModal = () => {
     setOpenModal(false)
   }
+
   // Invoke when user click to request another page.
-  const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % listDataLength
-    console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`)
-    console.log(`length ${listDataLength},`)
+  const handlePageClick = (newPage) => {
+    const newOffset = ((newPage - 1) * itemsPerPage) % listDataLength
     setItemOffset(newOffset)
   }
+
   return (
     <Container>
       <Modal open={openModal} onClose={onCloseModal} itemModal={itemModal} />
@@ -217,22 +216,18 @@ export default function Marketplace() {
         </RowGrid>
       </RowGridWrapper>
       <PagingContainer style={{ color: 'pink' }}>
-        <Pagination count={10} showFirstButton showLastButton color="secondary" style={{ display: 'none' }} />
-        <ReactPaginate
-          breakLabel="..."
-          nextLabel=">"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={5}
-          pageCount={pageCount}
-          previousLabel="<"
-          renderOnZeroPageCount={null}
-          pageClassName="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeMedium MuiPaginationItem-text MuiPaginationItem-circular MuiPaginationItem-textSecondary MuiPaginationItem-page css-19micn4-MuiButtonBase-root-MuiPaginationItem-root"
-          previousClassName="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeMedium MuiPaginationItem-text MuiPaginationItem-circular MuiPaginationItem-textSecondary MuiPaginationItem-page css-19micn4-MuiButtonBase-root-MuiPaginationItem-root"
-          nextClassName="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeMedium MuiPaginationItem-text MuiPaginationItem-circular MuiPaginationItem-textSecondary MuiPaginationItem-page css-19micn4-MuiButtonBase-root-MuiPaginationItem-root"
-          breakClassName="css-1v2lvtn-MuiPaginationItem-root"
-          containerClassName="css-wjh20t-MuiPagination-ul"
-          activeClassName="Mui-selected"
-        />
+        <PagingContainer>
+          <Pagination
+            count={pageCount}
+            showFirstButton
+            showLastButton
+            color="primary"
+            style={{ display: pageCount ? 'block' : 'none' }}
+            onChange={(_, value) => {
+              handlePageClick(value)
+            }}
+          />
+        </PagingContainer>
       </PagingContainer>
     </Container>
   )

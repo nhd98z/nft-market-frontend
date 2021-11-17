@@ -14,6 +14,7 @@ const useBuyNft = () => {
       try {
         if (nftMarketContract) {
           const price = ethers.utils.parseUnits(item.price, 'ether')
+          console.log(item)
           const buyNftTx = await nftMarketContract.buyDirectly(item.id, {
             value: price.toString(),
           })
