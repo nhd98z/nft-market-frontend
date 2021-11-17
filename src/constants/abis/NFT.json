@@ -27,12 +27,12 @@
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": false, "internalType": "uint8", "name": "class_", "type": "uint8" },
-      { "indexed": false, "internalType": "uint256", "name": "level_", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "heath_", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "speed_", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "skill_", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "morale_", "type": "uint256" },
+      { "indexed": false, "internalType": "uint8", "name": "_class", "type": "uint8" },
+      { "indexed": false, "internalType": "uint256", "name": "level", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "heath", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "speed", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "skill", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "morale", "type": "uint256" },
       { "indexed": false, "internalType": "address", "name": "owner", "type": "address" },
       { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" }
     ],
@@ -62,8 +62,8 @@
     "anonymous": false,
     "inputs": [
       { "indexed": false, "internalType": "address", "name": "owner", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "Id", "type": "uint256" },
-      { "indexed": false, "internalType": "uint8", "name": "class", "type": "uint8" },
+      { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "indexed": false, "internalType": "uint8", "name": "_class", "type": "uint8" },
       { "indexed": false, "internalType": "uint256", "name": "level", "type": "uint256" },
       { "indexed": false, "internalType": "uint256", "name": "heath", "type": "uint256" },
       { "indexed": false, "internalType": "uint256", "name": "speed", "type": "uint256" },
