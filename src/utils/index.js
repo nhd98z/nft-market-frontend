@@ -1,4 +1,5 @@
 import Web3Modal from 'web3modal'
+import { SECOND_PER_BLOCK } from '../constants'
 import { EXPLORER_TX } from '../constants/index'
 
 export const saveTxPending = (tx, message) => {
@@ -22,6 +23,16 @@ export const removeTxSuccess = (tx) => {
 export const connectWallet = async () => {
   const web3Modal = new Web3Modal()
   await web3Modal.connect()
+}
+
+export const timeToBlockNumber =  (time, chainId) => {
+    let pickTime = new Date(time).getTime()
+    let currentTimeStamp = Date.now()
+    let blockNumber = Math.floor((pickTime - currentTimeStamp) / 1000 / SECOND_PER_BLOCK[chainId])
+    console.log(blockNumber)
+    
+    return blockNumber
+    // setBlockNumber(blockNumber)
 }
 export const getTxSuccess = () => {
   return JSON.parse(localStorage.getItem('tx_success') ?? '{}') ?? {}

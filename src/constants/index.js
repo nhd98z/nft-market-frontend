@@ -15,12 +15,12 @@ export const ABI = {
 export const NFT_ADDRESS = {
   [ChainId.MAINNET]: undefined,
   [ChainId.ROPSTEN]: undefined,
-  [ChainId.RINKEBY]: '0x88fffaD4689581Bc9156041515447751B8A902A5',
+  [ChainId.RINKEBY]: '0xdc24B3C8c0634b2a16911763AaAaf725496DF263',
 }
 export const NFT_MARKET_ADDRESS = {
   [ChainId.MAINNET]: undefined,
   [ChainId.ROPSTEN]: undefined,
-  [ChainId.RINKEBY]: '0xB0b0C440E23c467a8B7D4ccE75f7658EFDBF8C98',
+  [ChainId.RINKEBY]: '0xdcE15fef2baAA2F9153b52A53e9e65A7d811F1Ff',
 }
 
 export const SECOND_PER_BLOCK = {
