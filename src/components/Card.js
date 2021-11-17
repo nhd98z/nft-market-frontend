@@ -100,7 +100,6 @@ export default forwardRef(function Card(props, ref) {
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
   const isMyNft = item.buyer === undefined && item.seller === undefined
   const isOwner = item.buyer.toLowerCase() === account.toLowerCase()
-  const chainId = useSelector((state) => state.provider.chainId)
   const [blockNumber, setBlockNumber] = useState(0)
   var currentdate = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0]
   const isLatestOffer = offers[0]?.asker.toLowerCase() === account.toLowerCase()
