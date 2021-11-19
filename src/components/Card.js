@@ -23,7 +23,7 @@ import { ReactComponent as Mech } from '../assets/mech.svg'
 import { ReactComponent as Bug } from '../assets/bug.svg'
 import useCancelMarketItem from '../hooks/useCancelMarketItem'
 import useLevelUp from '../hooks/useLevelUp'
-import { copyBuyer, inforTx } from '../utils/index'
+import { copyBuyer, inforTx,getTxSuccess } from '../utils/index'
 const StyledCard = styled(Box)`
   height: 340px;
   width: 225px;
@@ -140,9 +140,9 @@ export default forwardRef(function Card(props, ref) {
                 })}
               </Typography>
             </Box>
-            {item.seller!==undefined?<Typography marginLeft="4px" fontSize="10px" lineHeight="20px">
-               {`Seller: ${item.seller.slice(0, 6)}...${item.seller.slice(item.seller.length - 4, item.seller.length)}`}
-              </Typography>:null}
+            {item.seller !== undefined ? <Typography marginLeft="4px" fontSize="10px" lineHeight="20px">
+              {`Seller: ${item.seller.slice(0, 6)}...${item.seller.slice(item.seller.length - 4, item.seller.length)}`}
+            </Typography> : null}
           </Box>
           {isMyNft && showBuyOrSellButton && (
             <Box>
@@ -178,6 +178,8 @@ export default forwardRef(function Card(props, ref) {
                 </Typography>
               </Box>
               <Box display="flex" alignItems="flex-start">
+                <MI.LocalFireDepartment fontSize="small" style={{ fill: '#c23a3a' }} />
+
                 <Typography fontSize="16px" lineHeight="normal">
                   {item.morale}
                 </Typography>
@@ -202,7 +204,7 @@ export default forwardRef(function Card(props, ref) {
             />
           ) : null
           }
-          {showBuyOrSellButton && (!isSell && !isBuyDirectly || isMySell)  ? (
+          {showBuyOrSellButton && (!isSell && !isBuyDirectly || isMySell) ? (
             <Typography fontSize="12px" color="#90b8ef" lineHeight="12px" fontWeight={400}>
               {item.remainBlock <= 0 ? t('Auction ended') : t('Time remains: ') + secondsToHms((item.remainBlock * SECOND_PER_BLOCK[chainId]))}
             </Typography>
@@ -210,7 +212,7 @@ export default forwardRef(function Card(props, ref) {
           {showBuyOrSellButton && isSell && isApprove ? (
             <Box>
 
-              <div style={{ width:"100%", display: "flex", alignItems: "center", justifyContent: "center", margin: "10px -5px 24px" }}>
+              <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", margin: "10px -5px 24px" }}>
                 <CssTextField
                   style={{ margin: "0 5px" }}
                   width="50%"
@@ -239,22 +241,22 @@ export default forwardRef(function Card(props, ref) {
                   }}
                 />
               </div>
-                <CssTimeTextField
-                  id="datetime-local"
-                  label="Auction close"
-                  type="datetime-local"
-                  style = {{margin: "0 0 12px"}}
-                  inputProps={{
-                    min: currentdate
-                  }}
-                  defaultValue={currentdate}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  width="100%"
-                  onChange={(e) => setBlockNumber(timeToBlockNumber(e.target.value,chainId))}
-                />
-              <Typography  style = {{margin: "0 0 12px"}} color={blockNumber >= 10 ? "#ffffff" : "#c23a3a"} width="100%" fontSize="12px" fontWeight={400}>
+              <CssTimeTextField
+                id="datetime-local"
+                label="Auction close"
+                type="datetime-local"
+                style={{ margin: "0 0 12px" }}
+                inputProps={{
+                  min: currentdate
+                }}
+                defaultValue={currentdate}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                width="100%"
+                onChange={(e) => setBlockNumber(timeToBlockNumber(e.target.value, chainId))}
+              />
+              <Typography style={{ margin: "0 0 12px" }} color={blockNumber >= 10 ? "#ffffff" : "#c23a3a"} width="100%" fontSize="12px" fontWeight={400}>
                 {t("Number of block to close: ") + blockNumber}
               </Typography>
             </Box>
@@ -273,7 +275,7 @@ export default forwardRef(function Card(props, ref) {
               width="60%"
               unit="ETH"
               type="number"
-              disabled = {item.remainBlock <= 0&&!isBuyDirectly}
+              disabled={item.remainBlock <= 0 && !isBuyDirectly}
               InputProps={{ inputProps: { min: 0, max: 10 } }}
               label={t('Offer amount')}
               variant="filled"
@@ -330,23 +332,23 @@ export default forwardRef(function Card(props, ref) {
             {t('Cancel')}
           </StyledButton>
         )}
-        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && 
-        isLatestOffer && isEndAuction && (
-          <StyledButton
-            variant="contained"
-            style={{ margin: '8px 0' }}
-            onClick={() => {
-              onClaimReward(item, offers[0])
-            }}
-          >
-            {t('Claim')}
-          </StyledButton>
-        )}
+        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) &&
+          isLatestOffer && isEndAuction && (
+            <StyledButton
+              variant="contained"
+              style={{ margin: '8px 0' }}
+              onClick={() => {
+                onClaimReward(item, offers[0])
+              }}
+            >
+              {t('Claim')}
+            </StyledButton>
+          )}
         {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && !isEndAuction && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
-            disabled = {item.remainBlock <= 0&&!isBuyDirectly}
+            disabled={item.remainBlock <= 0 && !isBuyDirectly}
             onClick={() => {
               onClose && onClose()
               if (isSell && isApprove) {
@@ -415,11 +417,13 @@ export default forwardRef(function Card(props, ref) {
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                       {item.price} ETH ({item.time})
                     </Typography>
-                    <MI.LoginSharp
-                      onClick={() => inforTx(chainId, item.itemMarketId)}
-                      fontSize="big"
-                      style={{ fill: '#c23a3a', cursor: 'pointer' }}
-                    />
+                    <Box>
+                      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+                      <i class="fas fa-external-link-alt" style={{ color: '#c23a3a', cursor: "pointer", visibility: getTxSuccess()[item.itemMarketId] ? 'unset' : 'hidden' }}
+                        onClick={() => inforTx(chainId, item.itemMarketId)}
+                      />
+
+                    </Box>
                   </Box>
                 )
               })

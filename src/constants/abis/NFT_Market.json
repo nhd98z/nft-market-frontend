@@ -17,7 +17,8 @@
       { "indexed": false, "internalType": "address", "name": "nftContract", "type": "address" },
       { "indexed": false, "internalType": "uint256", "name": "itemId", "type": "uint256" },
       { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" }
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "currentPrice", "type": "uint256" }
     ],
     "name": "ItemBuyDirectly",
     "type": "event"
@@ -106,7 +107,8 @@
       { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
       { "indexed": false, "internalType": "uint256", "name": "offerId", "type": "uint256" },
       { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "blockTime", "type": "uint256" }
+      { "indexed": false, "internalType": "uint256", "name": "blockTime", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "currentPrice", "type": "uint256" }
     ],
     "name": "RewardClaimed",
     "type": "event"
